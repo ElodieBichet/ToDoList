@@ -1,6 +1,5 @@
 ToDoList
 ========
 
-Base du projet #8 : Améliorez un projet existant
-
-https://openclassrooms.com/projects/ameliorer-un-projet-existant-1
+Symfony application which need to be upgraded, tested and documented.  
+Work carried out as part of the training course "Application Developer - PHP / Symfony" on OpenClassrooms.
