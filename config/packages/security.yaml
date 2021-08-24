@@ -1,13 +1,13 @@
 security:
     encoders:
-        AppBundle\Entity\User: bcrypt
+        App\Entity\User: bcrypt
 
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
         # users_in_memory: { memory: null }
         doctrine:
             entity:
-                class: AppBundle:User
+                class: App\Entity\User
                 property: username
     firewalls:
         dev:

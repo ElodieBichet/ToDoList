@@ -21,7 +21,6 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
             - '../src/Tests/'
-            - '../src/AppBundle/'
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
@@ -32,13 +31,3 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    # REMOVE LATER
-    AppBundle\:
-        resource: '../src/AppBundle/*'
-        exclude: '../src/AppBundle/{Entity,Repository}'
-    
-    AppBundle\Controller\:
-        resource: '../src/AppBundle/Controller'
-        public: true
-        tags: ['controller.service_arguments']
-    #END REMOVE LATER
