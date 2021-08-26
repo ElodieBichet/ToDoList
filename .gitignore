@@ -34,3 +34,8 @@
 ###> blackfire ###
 /blackfire.msi
 ###< blackfire ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+###< phpunit/phpunit ###
