@@ -60,4 +60,9 @@ class UserTest extends KernelTestCase
             ['email email']
         ];
     }
+
+    public function testDefaultUserRole()
+    {
+        $this->assertSame(['ROLE_USER'], $this->getUserEntity()->getRoles());
+    }
 }
