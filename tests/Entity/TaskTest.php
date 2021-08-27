@@ -43,4 +43,9 @@ class TaskTest extends KernelTestCase
     {
         $this->assertHasErrors($this->getTaskEntity()->setContent(''), 1);
     }
+
+    public function testDefaultIsDoneIsFalse()
+    {
+        $this->assertEquals(false, $this->getTaskEntity()->isDone());
+    }
 }
