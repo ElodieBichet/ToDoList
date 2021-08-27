@@ -14,6 +14,7 @@
   <php>
     <ini name="error_reporting" value="-1"/>
     <!-- <server name="KERNEL_DIR" value="app/"/> -->
+    <env name="APP_SECRET" value="$ecretf0rt3st" />
     <env name="KERNEL_CLASS" value="App\Kernel" />
     <!-- ###+ doctrine/doctrine-bundle ### -->
     <!-- Format described at https://www.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html#connecting-using-a-url -->
