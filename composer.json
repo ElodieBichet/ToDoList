@@ -18,6 +18,7 @@
         "ext-iconv": "*",
         "composer/package-versions-deprecated": "1.11.99.2",
         "doctrine/doctrine-bundle": "^2.4",
+        "doctrine/doctrine-fixtures-bundle": "^3.4",
         "doctrine/doctrine-migrations-bundle": "^3.1",
         "doctrine/orm": "^2.9",
         "sensio/framework-extra-bundle": "^5.1",
@@ -46,6 +47,7 @@
         "symfony/css-selector": "4.4.*",
         "symfony/debug-bundle": "^4.4",
         "symfony/dotenv": "^4.4",
+        "symfony/maker-bundle": "^1.33",
         "symfony/phpunit-bridge": "^5.3"
     },
     "config": {
@@ -65,6 +67,18 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "prepare-database-dev": [
+            "php bin/console doctrine:database:drop --if-exists -f",
+            "php bin/console doctrine:database:create",
+            "php bin/console doctrine:schema:create",
+            "php bin/console doctrine:fixtures:load -n"
+        ],
+        "prepare-database-test": [
+            "php bin/console doctrine:database:drop --if-exists -f --env=test",
+            "php bin/console doctrine:database:create --env=test",
+            "php bin/console doctrine:schema:create --env=test",
+            "php bin/console doctrine:fixtures:load -n --env=test"
         ]
     },
     "conflict": {
