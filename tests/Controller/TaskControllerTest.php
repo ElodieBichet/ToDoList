@@ -4,14 +4,14 @@ namespace App\Tests\Controller;
 
 use App\Entity\User;
 use App\Tests\LoginUser;
+use App\Tests\UsersProvider;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class TaskControllerTest extends WebTestCase
 {
     use LoginUser;
+    use UsersProvider;
 
     /**
      * @dataProvider usersIdsWithRoleUser
@@ -26,15 +26,6 @@ class TaskControllerTest extends WebTestCase
 
         $client->request('GET', '/tasks');
         $this->assertResponseIsSuccessful();
-    }
-
-    public function usersIdsWithRoleUser()
-    {
-        return [
-            [1],
-            [2],
-            [3]
-        ];
     }
 
     /**
