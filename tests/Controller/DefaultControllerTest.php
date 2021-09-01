@@ -2,20 +2,28 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\User;
+use App\Tests\LoginUser;
+use App\Tests\UsersProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-// class DefaultControllerTest extends WebTestCase
-// {
-    // public function testIndex()
-    // {
-    //     $client = static::createClient([], [
-    //         'PHP_AUTH_USER' => 'username',
-    //         'PHP_AUTH_PW'   => 'password',
-    //     ]);
+class DefaultControllerTest extends WebTestCase
+{
+    use LoginUser;
+    use UsersProvider;
 
-    //     $crawler = $client->request('GET', '/');
+    /**
+     * @dataProvider usersIdsWithRoleUser
+     */
+    public function testIndex($userId)
+    {
+        $client = static::createClient();
+        /** @var User */
+        $user = $client->getContainer()->get('doctrine')->getRepository(User::class)->find($userId);
+        $this->login($client, $user);
+        $client->request('GET', '/');
 
-    //     $this->assertEquals(200, $client->getResponse()->getStatusCode());
-    //     // $this->assertContains('Welcome to Symfony', $crawler->filter('#container h1')->text());
-    // }
-// }
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('h1', 'Bienvenue');
+    }
+}
