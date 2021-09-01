@@ -2,30 +2,39 @@
 
 namespace App\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Entity\User;
+use App\Tests\LoginUser;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class TaskControllerTest extends WebTestCase
 {
-    public function getNewClient(?bool $authenticated = false)
+    use LoginUser;
+
+    /**
+     * @dataProvider usersIdsWithRoleUser
+     */
+    public function testTasksPageResponse($userId): void
     {
-        if ($authenticated) {
-            return static::createClient([], [
-                'HTTP_HOST'     => 'todolist-app',
-                'PHP_AUTH_USER' => 'Elodie',
-                'PHP_AUTH_PW'   => 'mdp-Elodie',
-            ]);
-        }
-        return static::createClient([], ['HTTP_HOST' => 'todolist-app',]);
+        $client = static::createClient();
+        /** @var User */
+        $user = $client->getContainer()->get('doctrine')->getRepository(User::class)->find($userId);
+
+        $this->login($client, $user);
+
+        $client->request('GET', '/tasks');
+        $this->assertResponseIsSuccessful();
     }
 
-    public function testTasksPageResponse(): void
+    public function usersIdsWithRoleUser()
     {
-        $client = $this->getNewClient(true);
-        $crawler = $client->request('GET', '/tasks');
-
-        $this->assertResponseIsSuccessful();
-        // $this->assertSelectorTextContains('h1', 'Hello World');
+        return [
+            [1],
+            [2],
+            [3]
+        ];
     }
 
     /**
@@ -33,10 +42,10 @@ class TaskControllerTest extends WebTestCase
      */
     public function testTasksLoginRedirection($uri): void
     {
-        $client = $this->getNewClient();
+        $client = static::createClient();
         $client->request('GET', $uri);
         $this->assertResponseRedirects(
-            "http://" . $client->getServerParameter('HTTP_HOST') . "/login",
+            "http://localhost/login",
             Response::HTTP_FOUND,
             "No redirection to login page for uri : " . $uri
         );
