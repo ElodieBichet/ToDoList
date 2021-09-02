@@ -35,7 +35,10 @@ jobs:
           # echo Add other actions to build,
           # echo test, and deploy your project.
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
+        run: composer install --prefer-dist --no-progress
+        
+      - name: Update composer
+        run: composer update
       
       - name: Init tests
         run: vendor/bin/phpunit
