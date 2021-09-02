@@ -44,5 +44,3 @@ jobs:
         uses: paambaati/codeclimate-action@v2.7.5
         env:
           CC_TEST_REPORTER_ID: 0ed1c2de735e46fdbd16f7d38a0d6df432d4d53b1b92b6f32ca4981d601d7939
-        coverageCommand: vendor/bin/phpunit --coverage-clover /tests/coverage.xml
-        coverageLocations: ${{github.workspace}}/tests/coverage.xml:clover
