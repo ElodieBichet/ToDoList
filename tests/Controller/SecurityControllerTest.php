@@ -2,10 +2,15 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\User;
+use App\Tests\LoginUser;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class SecurityControllerTest extends WebTestCase
 {
+    use LoginUser;
+
     public function testDisplayLoginForm()
     {
         $client = static::createClient();
@@ -41,8 +46,34 @@ class SecurityControllerTest extends WebTestCase
         ]);
         $client->submit($form);
 
-        $this->assertResponseRedirects();
+        // Check that user is authenticated
+        $this->assertNotFalse(unserialize($client->getContainer()->get('session')->get('_security_main')));
+
+        $this->assertResponseRedirects(
+            "http://localhost/",
+            Response::HTTP_FOUND
+        );
         $client->followRedirect();
-        $this->assertSelectorTextContains('h1', 'Bienvenue');
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function testSuccessfullLogout()
+    {
+        $client = static::createClient();
+        /** @var User */
+        $user = $client->getContainer()->get('doctrine')->getRepository(User::class)->find(1);
+        $this->login($client, $user);
+
+        $client->request('GET', '/logout');
+
+        // Check that user is not authenticated
+        $this->assertFalse(unserialize($client->getContainer()->get('session')->get('_security_main')));
+
+        // Check if user is redirected to login page
+        $client->followRedirect();
+        $this->assertResponseRedirects(
+            "http://localhost/login",
+            Response::HTTP_FOUND
+        );
     }
 }
