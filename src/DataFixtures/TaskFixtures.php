@@ -33,7 +33,8 @@ class TaskFixtures extends Fixture implements DependentFixtureInterface
                 ->setAuthor($author)
                 ->setCreatedAt(
                     (new DateTime())->sub(new DateInterval('P' . rand(0, 7) . 'D'))
-                );
+                )
+                ->toggle(mt_rand(0, 1));
             $manager->persist($task);
         }
 

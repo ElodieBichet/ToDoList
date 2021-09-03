@@ -41,8 +41,8 @@ class SecurityControllerTest extends WebTestCase
         $client = static::createClient();
         $crawler = $client->request('GET', '/login');
         $form = $crawler->selectButton('Se connecter')->form([
-            '_username' => 'Elodie',
-            '_password' => 'mdp-Elodie'
+            '_username' => 'user-1',
+            '_password' => 'mdp-user-1'
         ]);
         $client->submit($form);
 
