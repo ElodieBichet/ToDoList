@@ -18,14 +18,12 @@ class UserFixtures extends Fixture
 
     public function load(ObjectManager $manager)
     {
-        $usernames = ['Elodie', 'Adrien', 'Mehdi'];
-
-        foreach ($usernames as $username) {
+        for ($i = 1; $i <= 7; $i++) {
             $user = (new User());
-            $hash = $this->encoder->encodePassword($user, "mdp-" . $username);
-            $user->setUsername($username)
+            $hash = $this->encoder->encodePassword($user, "mdp-user-" . $i);
+            $user->setUsername("user-$i")
                 ->setPassword($hash)
-                ->setEmail($username . '@email.com');
+                ->setEmail($user->getUsername() . '@email.com');
             $manager->persist($user);
         }
 
