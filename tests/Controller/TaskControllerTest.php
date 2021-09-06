@@ -67,4 +67,26 @@ class TaskControllerTest extends WebTestCase
             ['/tasks/2/delete']
         ];
     }
+
+    public function testCreateTaskWithConnectedUserAsAuthor()
+    {
+        /** @var User */
+        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-1');
+
+        $this->login($this->testClient, $user);
+        $crawler = $this->testClient->request('GET', '/tasks/create');
+        $this->assertResponseIsSuccessful();
+
+        $form = $crawler->selectButton('Ajouter')->form([
+            'task[title]' => 'Ma nouvelle tâche',
+            'task[content]' => 'La description de ma nouvelle tâche'
+        ]);
+        $this->testClient->submit($form);
+
+        $this->assertResponseRedirects();
+        $this->testClient->followRedirect();
+        $this->assertSelectorExists('.alert.alert-success');
+
+        $this->assertCount(1, $user->getTasks(), "The number of tasks for the current user should be 1.");
+    }
 }
