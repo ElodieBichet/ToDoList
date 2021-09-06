@@ -20,7 +20,7 @@ class UserFixtures extends Fixture
     {
         for ($i = 1; $i <= 7; $i++) {
             $user = (new User());
-            $hash = $this->encoder->encodePassword($user, "mdp-user-" . $i);
+            $hash = $this->encoder->encodePassword($user, "mdp-user-$i");
             $user->setUsername("user-$i")
                 ->setPassword($hash)
                 ->setEmail($user->getUsername() . '@email.com');

@@ -5,7 +5,6 @@ namespace App\Tests\Controller;
 use App\DataFixtures\UserFixtures;
 use App\Entity\User;
 use App\Tests\LoginUser;
-use App\Tests\UsersProvider;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
@@ -14,7 +13,6 @@ use Liip\TestFixturesBundle\Services\DatabaseTools\AbstractDatabaseTool;
 class TaskControllerTest extends WebTestCase
 {
     use LoginUser;
-    use UsersProvider;
 
     /** @var AbstractDatabaseTool */
     protected $databaseTool;
@@ -27,10 +25,7 @@ class TaskControllerTest extends WebTestCase
         $this->databaseTool = $this->testClient->getContainer()->get(DatabaseToolCollection::class)->get();
     }
 
-    /**
-     * @dataProvider usersIdsWithRoleUser
-     */
-    public function testTasksPageResponse($userId): void
+    public function testTasksPageResponse(): void
     {
         /** @var User */
         $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-1');

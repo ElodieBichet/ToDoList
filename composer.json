@@ -78,8 +78,7 @@
         "prepare-database-test": [
             "php bin/console doctrine:database:drop --if-exists -f --env=test",
             "php bin/console doctrine:database:create --env=test",
-            "php bin/console doctrine:schema:create --env=test",
-            "php bin/console doctrine:fixtures:load -n --env=test"
+            "php bin/console doctrine:schema:create --env=test"
         ]
     },
     "conflict": {
