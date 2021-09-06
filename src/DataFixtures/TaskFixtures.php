@@ -36,6 +36,7 @@ class TaskFixtures extends Fixture implements DependentFixtureInterface
                 )
                 ->toggle(mt_rand(0, 1));
             $manager->persist($task);
+            $this->setReference("task-$i", $task);
         }
 
         $manager->flush();

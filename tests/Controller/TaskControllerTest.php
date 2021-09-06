@@ -2,9 +2,11 @@
 
 namespace App\Tests\Controller;
 
-use App\DataFixtures\UserFixtures;
+use App\Entity\Task;
 use App\Entity\User;
 use App\Tests\LoginUser;
+use App\DataFixtures\TaskFixtures;
+use App\DataFixtures\UserFixtures;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
@@ -83,5 +85,30 @@ class TaskControllerTest extends WebTestCase
         $this->assertSelectorExists('.alert.alert-success');
 
         $this->assertCount(1, $user->getTasks(), "The number of tasks for the current user should be 1.");
+    }
+
+    public function testEditTask()
+    {
+        /** @var User */
+        $user = $this->databaseTool->loadFixtures([UserFixtures::class, TaskFixtures::class])->getReferenceRepository()->getReference('user-1');
+
+        $this->login($this->testClient, $user);
+        $crawler = $this->testClient->request('GET', '/tasks/1/edit');
+        $this->assertResponseIsSuccessful();
+
+        $form = $crawler->selectButton('Modifier')->form([
+            'task[title]' => 'Un titre modifié',
+            'task[content]' => 'Un contenu modifié'
+        ]);
+        $this->testClient->submit($form);
+
+        $this->assertResponseRedirects();
+        $this->testClient->followRedirect();
+        $this->assertSelectorExists('.alert.alert-success');
+
+        /** @var Task */
+        $task = self::$container->get('doctrine')->getRepository(Task::class)->find(1);
+        $this->assertSame("Un titre modifié", $task->getTitle(), "The title has not been updated correctly.");
+        $this->assertSame("Un contenu modifié", $task->getContent(), "The content has not been updated correctly.");
     }
 }
