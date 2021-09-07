@@ -3,21 +3,31 @@
 namespace App\Tests\Controller;
 
 use App\Tests\LoginUser;
-use App\Tests\UsersProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
+use Liip\TestFixturesBundle\Services\DatabaseTools\AbstractDatabaseTool;
 
 class UserControllerTest extends WebTestCase
 {
     use LoginUser;
-    use UsersProvider;
+
+    /** @var AbstractDatabaseTool */
+    protected $databaseTool;
+
+    private $testClient = null;
+
+    public function setUp(): void
+    {
+        $this->testClient = static::createClient();
+        $this->databaseTool = $this->testClient->getContainer()->get(DatabaseToolCollection::class)->get();
+    }
 
     /**
      * @dataProvider usersRoutes
      */
     public function testUsersPageResponse($uri, $h1Text)
     {
-        $client = static::createClient();
-        $client->request('GET', $uri);
+        $this->testClient->request('GET', $uri);
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('h1', $h1Text);

@@ -4,17 +4,30 @@ namespace App\Tests\Controller;
 
 use App\Entity\User;
 use App\Tests\LoginUser;
+use App\DataFixtures\UserFixtures;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
+use Liip\TestFixturesBundle\Services\DatabaseTools\AbstractDatabaseTool;
 
 class SecurityControllerTest extends WebTestCase
 {
     use LoginUser;
 
+    /** @var AbstractDatabaseTool */
+    protected $databaseTool;
+
+    private $testClient = null;
+
+    public function setUp(): void
+    {
+        $this->testClient = static::createClient();
+        $this->databaseTool = $this->testClient->getContainer()->get(DatabaseToolCollection::class)->get();
+    }
+
     public function testDisplayLoginForm()
     {
-        $client = static::createClient();
-        $client->request('GET', '/login');
+        $this->testClient->request('GET', '/login');
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorExists('form');
@@ -23,54 +36,55 @@ class SecurityControllerTest extends WebTestCase
 
     public function testLoginWithBadCredentials()
     {
-        $client = static::createClient();
-        $crawler = $client->request('GET', '/login');
+        $crawler = $this->testClient->request('GET', '/login');
         $form = $crawler->selectButton('Se connecter')->form([
             '_username' => 'fakeusername',
             '_password' => 'fakepassword'
         ]);
-        $client->submit($form);
+        $this->testClient->submit($form);
 
         $this->assertResponseRedirects();
-        $client->followRedirect();
+        $this->testClient->followRedirect();
         $this->assertSelectorExists('.alert.alert-danger');
     }
 
     public function testSuccessfullLogin()
     {
-        $client = static::createClient();
-        $crawler = $client->request('GET', '/login');
+        $crawler = $this->testClient->request('GET', '/login');
+
+        /** @var User */
+        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-1');
+
         $form = $crawler->selectButton('Se connecter')->form([
-            '_username' => 'Elodie',
-            '_password' => 'mdp-Elodie'
+            '_username' => $user->getUsername(),
+            '_password' => 'mdp-' . $user->getUsername()
         ]);
-        $client->submit($form);
+        $this->testClient->submit($form);
 
         // Check that user is authenticated
-        $this->assertNotFalse(unserialize($client->getContainer()->get('session')->get('_security_main')));
+        $this->assertNotFalse(unserialize($this->testClient->getContainer()->get('session')->get('_security_main')));
 
         $this->assertResponseRedirects(
             "http://localhost/",
             Response::HTTP_FOUND
         );
-        $client->followRedirect();
+        $this->testClient->followRedirect();
         $this->assertResponseIsSuccessful();
     }
 
     public function testSuccessfullLogout()
     {
-        $client = static::createClient();
         /** @var User */
-        $user = $client->getContainer()->get('doctrine')->getRepository(User::class)->find(1);
-        $this->login($client, $user);
+        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-1');
+        $this->login($this->testClient, $user);
 
-        $client->request('GET', '/logout');
+        $this->testClient->request('GET', '/logout');
 
         // Check that user is not authenticated
-        $this->assertFalse(unserialize($client->getContainer()->get('session')->get('_security_main')));
+        $this->assertFalse(unserialize($this->testClient->getContainer()->get('session')->get('_security_main')));
 
         // Check if user is redirected to login page
-        $client->followRedirect();
+        $this->testClient->followRedirect();
         $this->assertResponseRedirects(
             "http://localhost/login",
             Response::HTTP_FOUND

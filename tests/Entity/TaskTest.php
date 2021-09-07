@@ -3,6 +3,7 @@
 namespace App\Tests\Entity;
 
 use App\Entity\Task;
+use App\Entity\User;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -47,5 +48,10 @@ class TaskTest extends KernelTestCase
     public function testDefaultIsDoneIsFalse()
     {
         $this->assertEquals(false, $this->getTaskEntity()->isDone());
+    }
+
+    public function testAuthorCanBeNull()
+    {
+        $this->assertHasErrors($this->getTaskEntity()->setAuthor(null), 0);
     }
 }
