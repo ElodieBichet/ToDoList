@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1631008696">
-  <project timestamp="1631008696">
+<coverage generated="1631011498">
+  <project timestamp="1631011498">
     <file name="C:\Users\infom\OneDrive\Documents\OpenClassrooms\_P8\projet\TodoList\src\Controller\DefaultController.php">
       <class name="App\Controller\DefaultController" namespace="global">
         <metrics complexity="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="1" coveredstatements="1" elements="2" coveredelements="2"/>
@@ -11,7 +11,7 @@
     </file>
     <file name="C:\Users\infom\OneDrive\Documents\OpenClassrooms\_P8\projet\TodoList\src\Controller\SecurityController.php">
       <class name="App\Controller\SecurityController" namespace="global">
-        <metrics complexity="3" methods="3" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="7" coveredstatements="5" elements="10" coveredelements="6"/>
+        <metrics complexity="3" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="5" coveredstatements="5" elements="6" coveredelements="6"/>
       </class>
       <line num="15" type="method" name="loginAction" visibility="public" complexity="1" crap="1" count="3"/>
       <line num="17" type="stmt" count="3"/>
@@ -19,11 +19,7 @@
       <line num="20" type="stmt" count="3"/>
       <line num="21" type="stmt" count="3"/>
       <line num="22" type="stmt" count="3"/>
-      <line num="29" type="method" name="loginCheck" visibility="public" complexity="1" crap="2" count="0"/>
-      <line num="32" type="stmt" count="0"/>
-      <line num="37" type="method" name="logoutCheck" visibility="public" complexity="1" crap="2" count="0"/>
-      <line num="40" type="stmt" count="0"/>
-      <metrics loc="41" ncloc="32" classes="1" methods="3" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="7" coveredstatements="5" elements="10" coveredelements="6"/>
+      <metrics loc="43" ncloc="32" classes="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="5" coveredstatements="5" elements="6" coveredelements="6"/>
     </file>
     <file name="C:\Users\infom\OneDrive\Documents\OpenClassrooms\_P8\projet\TodoList\src\Controller\TaskController.php">
       <class name="App\Controller\TaskController" namespace="global">
@@ -248,7 +244,7 @@
     </file>
     <file name="C:\Users\infom\OneDrive\Documents\OpenClassrooms\_P8\projet\TodoList\src\Kernel.php">
       <class name="App\Kernel" namespace="global">
-        <metrics complexity="7" methods="4" coveredmethods="4" conditionals="0" coveredconditionals="0" statements="21" coveredstatements="21" elements="25" coveredelements="25"/>
+        <metrics complexity="7" methods="2" coveredmethods="2" conditionals="0" coveredconditionals="0" statements="7" coveredstatements="7" elements="9" coveredelements="9"/>
       </class>
       <line num="14" type="stmt" count="1"/>
       <line num="18" type="method" name="registerBundles" visibility="public" complexity="3" crap="3" count="33"/>
@@ -259,24 +255,8 @@
       <line num="26" type="stmt" count="33"/>
       <line num="28" type="method" name="getProjectDir" visibility="public" complexity="1" crap="1" count="33"/>
       <line num="30" type="stmt" count="33"/>
-      <line num="33" type="method" name="configureContainer" visibility="protected" complexity="2" crap="2" count="1"/>
-      <line num="35" type="stmt" count="1"/>
-      <line num="36" type="stmt" count="1"/>
-      <line num="37" type="stmt" count="1"/>
-      <line num="38" type="stmt" count="1"/>
-      <line num="40" type="stmt" count="1"/>
-      <line num="41" type="stmt" count="1"/>
-      <line num="42" type="stmt" count="1"/>
-      <line num="43" type="stmt" count="1"/>
-      <line num="44" type="stmt" count="1"/>
-      <line num="46" type="method" name="configureRoutes" visibility="protected" complexity="1" crap="1" count="1"/>
-      <line num="48" type="stmt" count="1"/>
-      <line num="50" type="stmt" count="1"/>
-      <line num="51" type="stmt" count="1"/>
-      <line num="52" type="stmt" count="1"/>
-      <line num="53" type="stmt" count="1"/>
-      <metrics loc="54" ncloc="54" classes="1" methods="4" coveredmethods="4" conditionals="0" coveredconditionals="0" statements="22" coveredstatements="22" elements="26" coveredelements="26"/>
+      <metrics loc="60" ncloc="54" classes="1" methods="2" coveredmethods="2" conditionals="0" coveredconditionals="0" statements="8" coveredstatements="8" elements="10" coveredelements="10"/>
     </file>
-    <metrics files="11" loc="663" ncloc="572" classes="11" methods="49" coveredmethods="44" conditionals="0" coveredconditionals="0" statements="162" coveredstatements="147" elements="211" coveredelements="191"/>
+    <metrics files="11" loc="671" ncloc="572" classes="11" methods="45" coveredmethods="42" conditionals="0" coveredconditionals="0" statements="146" coveredstatements="133" elements="191" coveredelements="175"/>
   </project>
 </coverage>
