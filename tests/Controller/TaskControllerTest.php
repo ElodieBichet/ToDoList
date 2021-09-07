@@ -129,4 +129,20 @@ class TaskControllerTest extends WebTestCase
 
         $this->assertNotEquals($isDone, $task->isDone());
     }
+
+    public function testDeleteTask()
+    {
+        /** @var User */
+        $user = $this->databaseTool->loadFixtures([UserFixtures::class, TaskFixtures::class])->getReferenceRepository()->getReference('user-1');
+        $this->login($this->testClient, $user);
+
+        $this->testClient->request('GET', '/tasks/1/delete');
+        $this->assertResponseRedirects();
+        $this->testClient->followRedirect();
+        $this->assertSelectorExists('.alert.alert-success');
+
+        /** @var Task */
+        $task = self::$container->get('doctrine')->getRepository(Task::class)->find(1);
+        $this->assertNull($task);
+    }
 }
