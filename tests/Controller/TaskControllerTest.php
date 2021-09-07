@@ -111,4 +111,22 @@ class TaskControllerTest extends WebTestCase
         $this->assertSame("Un titre modifié", $task->getTitle(), "The title has not been updated correctly.");
         $this->assertSame("Un contenu modifié", $task->getContent(), "The content has not been updated correctly.");
     }
+
+    public function testToggleTask()
+    {
+        /** @var User */
+        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-1');
+
+        /** @var Task */
+        $task = $this->databaseTool->loadFixtures([TaskFixtures::class])->getReferenceRepository()->getReference('task-1');
+        $isDone = $task->isDone();
+
+        $this->login($this->testClient, $user);
+        $this->testClient->request('GET', '/tasks/1/toggle');
+        $this->assertResponseRedirects();
+        $this->testClient->followRedirect();
+        $this->assertSelectorExists('.alert.alert-success');
+
+        $this->assertNotEquals($isDone, $task->isDone());
+    }
 }
