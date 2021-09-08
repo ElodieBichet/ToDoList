@@ -44,9 +44,12 @@ class UserController extends AbstractController
             $em->persist($user);
             $em->flush();
 
-            $this->addFlash('success', "L'utilisateur a bien été ajouté.");
+            $this->addFlash('success', "Le compte utilisateur a bien été créé.");
 
-            return $this->redirectToRoute('user_list');
+            if ($this->isGranted("ROLE_ADMIN")) {
+                return $this->redirectToRoute('user_list');
+            }
+            return $this->redirectToRoute('login');
         }
 
         return $this->render('user/create.html.twig', ['form' => $form->createView()]);
@@ -73,7 +76,7 @@ class UserController extends AbstractController
 
             $this->getDoctrine()->getManager()->flush();
 
-            $this->addFlash('success', "L'utilisateur a bien été modifié");
+            $this->addFlash('success', "Le compte utilisateur a bien été modifié");
 
             if ($this->isGranted("ROLE_ADMIN")) {
                 return $this->redirectToRoute('user_list');
