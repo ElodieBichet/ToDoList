@@ -34,6 +34,9 @@ class UserController extends AbstractController
             $password = $encoder->encodePassword($user, $user->getPassword());
             $user->setPassword($password);
 
+            // Add ROLE_ADMIN to user roles if admin checkbox is checked 
+            ($form->get('admin')->getData()) ? $user->setRoles(['ROLE_ADMIN']) : $user->setRoles([]);
+
             $em->persist($user);
             $em->flush();
 
@@ -57,6 +60,9 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $password = $encoder->encodePassword($user, $user->getPassword());
             $user->setPassword($password);
+
+            // Add/Remove ROLE_ADMIN to/from user roles if admin checkbox is/isn't checked 
+            ($form->get('admin')->getData()) ? $user->setRoles(['ROLE_ADMIN']) : $user->setRoles([]);
 
             $this->getDoctrine()->getManager()->flush();
 
