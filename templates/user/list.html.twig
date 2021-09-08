@@ -19,8 +19,9 @@
 					<tr>
 						<th>#</th>
 						<th>Nom d'utilisateur</th>
+						<th>Admin</th>
 						<th>Adresse d'utilisateur</th>
-						<th>Nombre de tâches</th>
+						<th>Nb de tâches</th>
 						<th>Actions</th>
 					</tr>
 				</thead>
@@ -29,6 +30,11 @@
 						<tr>
 							<th scope="row">{{ loop.index }}</th>
 							<td>{{ user.username }}</td>
+							<td>
+								{% if "ROLE_ADMIN" in user.roles %}
+									<span class="glyphicon glyphicon-ok text-success"></span>
+								{% endif %}
+							</td>
 							<td>{{ user.email }}</td>
 							<td>{{ user.tasks.count }}
 							</td>
