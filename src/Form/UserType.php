@@ -2,10 +2,13 @@
 
 namespace App\Form;
 
+use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 
@@ -20,8 +23,22 @@ class UserType extends AbstractType
                 'invalid_message' => 'Les deux mots de passe doivent correspondre.',
                 'required' => true,
                 'first_options'  => ['label' => 'Mot de passe'],
-                'second_options' => ['label' => 'Tapez le mot de passe à nouveau'],
+                'second_options' => ['label' => 'Tapez le mot de passe à nouveau']
             ])
-            ->add('email', EmailType::class, ['label' => 'Adresse email']);
+            ->add('email', EmailType::class, ['label' => 'Adresse email'])
+            ->add('admin', CheckboxType::class, [
+                'label' => "Administrateur",
+                'required' => false,
+                'mapped' => false,
+                'data' => ($builder->getData()->getId()) ? in_array("ROLE_ADMIN", $builder->getData()->getRoles()) : false
+            ]);
+    }
+
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults([
+            'data_class' => User::class,
+            'allow_extra_fields' => true
+        ]);
     }
 }
