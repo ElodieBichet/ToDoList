@@ -18,6 +18,14 @@ class UserFixtures extends Fixture
 
     public function load(ObjectManager $manager)
     {
+        $admin = (new User)
+            ->setUsername("user-admin")
+            ->setEmail("user-admin@email.com")
+            ->setRoles(["ROLE_ADMIN"]);
+        $admin->setPassword($this->encoder->encodePassword($admin, "mdp-user-admin"));
+        $manager->persist($admin);
+        $this->setReference("user-admin", $admin);
+
         for ($i = 1; $i <= 7; $i++) {
             $user = (new User());
             $hash = $this->encoder->encodePassword($user, "mdp-user-$i");
