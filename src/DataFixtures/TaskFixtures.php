@@ -24,9 +24,17 @@ class TaskFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager)
     {
         $users = $this->container->get('doctrine')->getRepository(User::class)->findAll();
+        $user1 = $this->container->get('doctrine')->getRepository(User::class)->findOneBy(['username' => 'user-1']);
+        $user2 = $this->container->get('doctrine')->getRepository(User::class)->findOneBy(['username' => 'user-2']);
 
         for ($i = 1; $i <= 20; $i++) {
-            $author = (mt_rand(1, 10) < 8) ? $users[mt_rand(0, count($users) - 1)] : null;
+            if ($i == 1) {
+                $author = $user1;
+            } elseif ($i == 2) {
+                $author = $user2;
+            } else {
+                $author = (mt_rand(1, 10) < 8) ? $users[mt_rand(0, count($users) - 1)] : null;
+            }
             $task = (new Task())
                 ->setTitle("Ma tâche $i")
                 ->setContent("Le contenu de ma tâche $i")
