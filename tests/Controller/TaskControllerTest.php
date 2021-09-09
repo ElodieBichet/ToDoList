@@ -87,13 +87,81 @@ class TaskControllerTest extends WebTestCase
         $this->assertCount(1, $user->getTasks(), "The number of tasks for the current user should be 1.");
     }
 
-    public function testEditTask()
+    public function testDeleteTaskForbiddenIfUserIsNotAuthor()
     {
         /** @var User */
-        $user = $this->databaseTool->loadFixtures([UserFixtures::class, TaskFixtures::class])->getReferenceRepository()->getReference('user-1');
+        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-1');
+
+        /** @var Task */
+        $task = $this->databaseTool->loadFixtures([TaskFixtures::class])->getReferenceRepository()->getReference('task-2');
 
         $this->login($this->testClient, $user);
-        $crawler = $this->testClient->request('GET', '/tasks/1/edit');
+
+        $this->testClient->request('GET', '/tasks/' . $task->getId() . '/delete');
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testEditTaskForbiddenIfUserIsNotAuthor()
+    {
+        /** @var User */
+        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-1');
+
+        /** @var Task */
+        $task = $this->databaseTool->loadFixtures([TaskFixtures::class])->getReferenceRepository()->getReference('task-2');
+
+        $this->login($this->testClient, $user);
+
+        $this->testClient->request('GET', '/tasks/' . $task->getId() . '/edit');
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testToggleTaskForbiddenIfUserIsNotAuthorOrAdmin()
+    {
+        /** @var User */
+        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-1');
+
+        /** @var Task */
+        $task = $this->databaseTool->loadFixtures([TaskFixtures::class])->getReferenceRepository()->getReference('task-2');
+
+        $this->login($this->testClient, $user);
+
+        $this->testClient->request('GET', '/tasks/' . $task->getId() . '/delete');
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testSuccessfulDeleteTaskAsAuthor()
+    {
+        /** @var User */
+        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-1');
+
+        /** @var Task */
+        $task = $this->databaseTool->loadFixtures([TaskFixtures::class])->getReferenceRepository()->getReference('task-1');
+        $id = $task->getId();
+
+        $this->login($this->testClient, $user);
+
+        $this->testClient->request('GET', '/tasks/' . $task->getId() . '/delete');
+        $this->assertResponseRedirects();
+        $this->testClient->followRedirect();
+        $this->assertSelectorExists('.alert.alert-success');
+
+        $this->assertNull(
+            self::$container->get('doctrine')->getRepository(Task::class)->find($id),
+            "The task has not been removed from DB as expected"
+        );
+    }
+
+    public function testSuccessfulEditTaskAsAuthor()
+    {
+        /** @var User */
+        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-1');
+
+        /** @var Task */
+        $task = $this->databaseTool->loadFixtures([TaskFixtures::class])->getReferenceRepository()->getReference('task-1');
+
+        $this->login($this->testClient, $user);
+
+        $crawler = $this->testClient->request('GET', '/tasks/' . $task->getId() . '/edit');
         $this->assertResponseIsSuccessful();
 
         $form = $crawler->selectButton('Modifier')->form([
@@ -107,22 +175,23 @@ class TaskControllerTest extends WebTestCase
         $this->assertSelectorExists('.alert.alert-success');
 
         /** @var Task */
-        $task = self::$container->get('doctrine')->getRepository(Task::class)->find(1);
-        $this->assertSame("Un titre modifié", $task->getTitle(), "The title has not been updated correctly.");
-        $this->assertSame("Un contenu modifié", $task->getContent(), "The content has not been updated correctly.");
+        $newTask = self::$container->get('doctrine')->getRepository(Task::class)->find($task->getId());
+        $this->assertSame("Un titre modifié", $newTask->getTitle(), "The title has not been updated correctly.");
+        $this->assertSame("Un contenu modifié", $newTask->getContent(), "The content has not been updated correctly.");
     }
 
-    public function testToggleTask()
+    public function testSuccessfulToggleTaskAsAdmin()
     {
         /** @var User */
-        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-1');
+        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-admin');
 
         /** @var Task */
         $task = $this->databaseTool->loadFixtures([TaskFixtures::class])->getReferenceRepository()->getReference('task-1');
         $isDone = $task->isDone();
 
         $this->login($this->testClient, $user);
-        $this->testClient->request('GET', '/tasks/1/toggle');
+
+        $this->testClient->request('GET', '/tasks/' . $task->getId() . '/toggle');
         $this->assertResponseRedirects();
         $this->testClient->followRedirect();
         $this->assertSelectorExists('.alert.alert-success');
@@ -130,19 +199,20 @@ class TaskControllerTest extends WebTestCase
         $this->assertNotEquals($isDone, $task->isDone());
     }
 
-    public function testDeleteTask()
+    public function testSuccessfulToggleTaskAsAuthor()
     {
-        /** @var User */
-        $user = $this->databaseTool->loadFixtures([UserFixtures::class, TaskFixtures::class])->getReferenceRepository()->getReference('user-1');
+        /** @var Task */
+        $task = $this->databaseTool->loadFixtures([TaskFixtures::class])->getReferenceRepository()->getReference('task-1');
+        $isDone = $task->isDone();
+        $user = $task->getAuthor();
+
         $this->login($this->testClient, $user);
 
-        $this->testClient->request('GET', '/tasks/1/delete');
+        $this->testClient->request('GET', '/tasks/' . $task->getId() . '/toggle');
         $this->assertResponseRedirects();
         $this->testClient->followRedirect();
         $this->assertSelectorExists('.alert.alert-success');
 
-        /** @var Task */
-        $task = self::$container->get('doctrine')->getRepository(Task::class)->find(1);
-        $this->assertNull($task);
+        $this->assertNotEquals($isDone, $task->isDone());
     }
 }
