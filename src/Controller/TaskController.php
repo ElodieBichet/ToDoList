@@ -4,9 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Task;
 use App\Form\TaskType;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class TaskController extends AbstractController
 {
@@ -44,6 +45,7 @@ class TaskController extends AbstractController
 
     /**
      * @Route("/tasks/{id}/edit", name="task_edit")
+     * @IsGranted("TASK_EDIT", subject="task", message="You can only edit your own tasks (and anonymous tasks if you are admin)")
      */
     public function editAction(Task $task, Request $request)
     {
@@ -67,6 +69,7 @@ class TaskController extends AbstractController
 
     /**
      * @Route("/tasks/{id}/toggle", name="task_toggle")
+     * @IsGranted("TASK_TOGGLE", subject="task", message="You can only manage your own tasks if you're not admin")
      */
     public function toggleTaskAction(Task $task)
     {
@@ -81,6 +84,7 @@ class TaskController extends AbstractController
 
     /**
      * @Route("/tasks/{id}/delete", name="task_delete")
+     * @IsGranted("TASK_DELETE", subject="task", message="You can only delete your own tasks")
      */
     public function deleteTaskAction(Task $task)
     {
