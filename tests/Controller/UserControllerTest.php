@@ -2,7 +2,10 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\User;
 use App\Tests\LoginUser;
+use App\DataFixtures\UserFixtures;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
 use Liip\TestFixturesBundle\Services\DatabaseTools\AbstractDatabaseTool;
@@ -22,24 +25,192 @@ class UserControllerTest extends WebTestCase
         $this->databaseTool = $this->testClient->getContainer()->get(DatabaseToolCollection::class)->get();
     }
 
-    /**
-     * @dataProvider usersRoutes
-     */
-    public function testUsersPageResponse($uri, $h1Text)
+    public function testUsersPageResponse()
     {
+        $this->testClient->request('GET', '/users/create');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('h1', 'S\'enregistrer');
+    }
+
+    /**
+     * @dataProvider usersProtectedRoutes
+     */
+    public function testLoginRedirectionIfNotAuthenticated($uri): void
+    {
+        $this->databaseTool->loadFixtures([UserFixtures::class]);
+        $this->testClient->request('GET', $uri);
+        $this->assertResponseRedirects(
+            "http://localhost/login",
+            Response::HTTP_FOUND,
+            "No redirection to login page for uri : " . $uri
+        );
+    }
+
+    public function usersProtectedRoutes()
+    {
+        return [
+            ['/users'],
+            ['/users/1/edit'],
+            ['/users/2/edit']
+        ];
+    }
+
+    /**
+     * @dataProvider usersAdminRoutes
+     */
+    public function testUsersPageResponseIfAuthenticatedAsAdmin($uri, $h1Text)
+    {
+        /** @var User */
+        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-admin');
+
+        $this->login($this->testClient, $user);
+
         $this->testClient->request('GET', $uri);
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('h1', $h1Text);
     }
 
-    public function usersRoutes()
+    public function usersAdminRoutes()
     {
         return [
-            ['/users', 'Liste des utilisateurs'],
             ['/users/create', 'Créer un utilisateur'],
+            ['/users', 'Liste des utilisateurs'],
             ['/users/1/edit', 'Modifier'],
             ['/users/2/edit', 'Modifier']
         ];
+    }
+
+    public function testForbiddenAccessForSimpleUser(): void
+    {
+        /** @var User */
+        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-1');
+
+        $this->login($this->testClient, $user);
+
+        $this->testClient->request('GET', '/users');
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+
+        $this->testClient->request('GET', '/users/1/edit');
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+
+        $this->testClient->request('GET', '/users/3/edit');
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testCreateUser(): void
+    {
+        $this->databaseTool->loadFixtures([UserFixtures::class]);
+        $crawler = $this->testClient->request('GET', '/users/create');
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorNotExists("input#user_admin");
+
+        $form = $crawler->selectButton('Ajouter')->form([
+            'user[username]' => 'Username',
+            'user[password][first]' => 'pa$$word',
+            'user[password][second]' => 'pa$$word',
+            'user[email]' => 'username@email.com'
+        ]);
+        $this->testClient->submit($form);
+
+        $this->assertResponseRedirects();
+        $this->testClient->followRedirect();
+        $this->assertSelectorExists('.alert.alert-success');
+
+        $this->assertNotNull(
+            self::$container->get('doctrine')->getRepository(User::class)->findOneBy(['username' => 'Username']),
+            "The new created user is not found in database"
+        );
+    }
+
+    public function testCreateUserWhenAuthenticatedAsAdmin(): void
+    {
+        /** @var User */
+        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-admin');
+
+        $this->login($this->testClient, $user);
+
+        $crawler = $this->testClient->request('GET', '/users/create');
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists("input#user_admin");
+
+        $form = $crawler->selectButton('Ajouter')->form([
+            'user[username]' => 'Username',
+            'user[password][first]' => 'pa$$word',
+            'user[password][second]' => 'pa$$word',
+            'user[email]' => 'username@email.com',
+            'user[admin]' => true
+        ]);
+        $this->testClient->submit($form);
+
+        $this->assertResponseRedirects();
+        $this->testClient->followRedirect();
+        $this->assertSelectorExists('.alert.alert-success');
+
+        /** @var User */
+        $user = self::$container->get('doctrine')->getRepository(User::class)->findOneBy(['username' => 'Username']);
+        $this->assertNotNull($user, "The new created user is not found in database");
+        $this->assertTrue(in_array("ROLE_ADMIN", $user->getRoles()), "Admin role has not been added as expected");
+    }
+
+    public function testEditUser()
+    {
+        /** @var User */
+        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-1');
+
+        $this->login($this->testClient, $user);
+
+        $crawler = $this->testClient->request('GET', '/users/' . $user->getId() . '/edit');
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorNotExists("input#user_admin");
+
+        $form = $crawler->selectButton('Modifier')->form([
+            'user[username]' => 'New username',
+            'user[password][first]' => 'new-pa$$word',
+            'user[password][second]' => 'new-pa$$word',
+            'user[email]' => 'new-username@email.com'
+        ]);
+        $this->testClient->submit($form);
+
+        $this->assertResponseRedirects();
+        $this->testClient->followRedirect();
+        $this->assertSelectorExists('.alert.alert-success');
+
+        /** @var User */
+        $newuser = self::$container->get('doctrine')->getRepository(User::class)->find($user->getId());
+        $this->assertSame("New username", $newuser->getUsername(), "The username has not been updated correctly.");
+        $this->assertSame("new-username@email.com", $newuser->getEmail(), "The email has not been updated correctly.");
+    }
+
+    public function testEditUserWhenAuthenticatedAsAdmin()
+    {
+        /** @var User */
+        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-admin');
+
+        $this->login($this->testClient, $user);
+
+        $crawler = $this->testClient->request('GET', '/users/2/edit');
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists("input#user_admin");
+
+        $form = $crawler->selectButton('Modifier')->form([
+            'user[username]' => 'New username',
+            'user[password][first]' => 'new-pa$$word',
+            'user[password][second]' => 'new-pa$$word',
+            'user[email]' => 'new-username@email.com',
+            'user[admin]' => true
+        ]);
+        $this->testClient->submit($form);
+
+        $this->assertResponseRedirects();
+        $this->testClient->followRedirect();
+        $this->assertSelectorExists('.alert.alert-success');
+
+        /** @var User */
+        $updateduser = self::$container->get('doctrine')->getRepository(User::class)->find(2);
+        $this->assertSame("New username", $updateduser->getUsername(), "The username has not been updated correctly.");
+        $this->assertSame("new-username@email.com", $updateduser->getEmail(), "The email has not been updated correctly.");
+        $this->assertTrue(in_array("ROLE_ADMIN", $updateduser->getRoles()), "Admin role has not been added as expected");
     }
 }

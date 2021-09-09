@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Form\UserType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
@@ -13,6 +14,7 @@ class UserController extends AbstractController
 {
     /**
      * @Route("/users", name="user_list")
+     * @IsGranted("ROLE_ADMIN", message="You have to be authenticated as an admin to see this page")
      */
     public function listAction()
     {
@@ -35,14 +37,19 @@ class UserController extends AbstractController
             $user->setPassword($password);
 
             // Add ROLE_ADMIN to user roles if admin checkbox is checked 
-            ($form->get('admin')->getData()) ? $user->setRoles(['ROLE_ADMIN']) : $user->setRoles([]);
+            if ($this->isGranted("ROLE_ADMIN")) {
+                ($form->get('admin')->getData()) ? $user->setRoles(['ROLE_ADMIN']) : $user->setRoles([]);
+            }
 
             $em->persist($user);
             $em->flush();
 
-            $this->addFlash('success', "L'utilisateur a bien été ajouté.");
+            $this->addFlash('success', "Le compte utilisateur a bien été créé.");
 
-            return $this->redirectToRoute('user_list');
+            if ($this->isGranted("ROLE_ADMIN")) {
+                return $this->redirectToRoute('user_list');
+            }
+            return $this->redirectToRoute('login');
         }
 
         return $this->render('user/create.html.twig', ['form' => $form->createView()]);
@@ -50,6 +57,7 @@ class UserController extends AbstractController
 
     /**
      * @Route("/users/{id}/edit", name="user_edit")
+     * @IsGranted("USER_EDIT", subject="user", message="You can only edit your own account")
      */
     public function editAction(User $user, Request $request, UserPasswordEncoderInterface $encoder)
     {
@@ -61,14 +69,19 @@ class UserController extends AbstractController
             $password = $encoder->encodePassword($user, $user->getPassword());
             $user->setPassword($password);
 
-            // Add/Remove ROLE_ADMIN to/from user roles if admin checkbox is/isn't checked 
-            ($form->get('admin')->getData()) ? $user->setRoles(['ROLE_ADMIN']) : $user->setRoles([]);
+            // Add/Remove ROLE_ADMIN to/from user roles if admin checkbox is/isn't checked
+            if ($this->isGranted("ROLE_ADMIN")) {
+                ($form->get('admin')->getData()) ? $user->setRoles(['ROLE_ADMIN']) : $user->setRoles([]);
+            }
 
             $this->getDoctrine()->getManager()->flush();
 
-            $this->addFlash('success', "L'utilisateur a bien été modifié");
+            $this->addFlash('success', "Le compte utilisateur a bien été modifié");
 
-            return $this->redirectToRoute('user_list');
+            if ($this->isGranted("ROLE_ADMIN")) {
+                return $this->redirectToRoute('user_list');
+            }
+            return $this->redirectToRoute('homepage');
         }
 
         return $this->render('user/edit.html.twig', ['form' => $form->createView(), 'user' => $user]);
