@@ -4,7 +4,6 @@ namespace App\Tests\Controller;
 
 use App\Entity\User;
 use App\Tests\LoginUser;
-use App\DataFixtures\UserFixtures;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
@@ -38,7 +37,6 @@ class UserControllerTest extends WebTestCase
      */
     public function testLoginRedirectionIfNotAuthenticated($uri): void
     {
-        $this->databaseTool->loadFixtures([UserFixtures::class]);
         $this->testClient->request('GET', $uri);
         $this->assertResponseRedirects(
             "http://localhost/login",
@@ -61,8 +59,9 @@ class UserControllerTest extends WebTestCase
      */
     public function testUsersPageResponseIfAuthenticatedAsAdmin($uri, $h1Text)
     {
+        $fixtures = $this->databaseTool->loadAliceFixture([__DIR__ . '/../DataFixtures/UserTaskFixturesTest.yaml'], false);
         /** @var User */
-        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-admin');
+        $user = $fixtures['user-admin'];
 
         $this->login($this->testClient, $user);
 
@@ -82,26 +81,38 @@ class UserControllerTest extends WebTestCase
         ];
     }
 
-    public function testForbiddenAccessForSimpleUser(): void
+    /**
+     * @dataProvider usersWithUserRole
+     */
+    public function testForbiddenAccessForSimpleUser($userRef): void
     {
+        $fixtures = $this->databaseTool->loadAliceFixture([__DIR__ . '/../DataFixtures/UserTaskFixturesTest.yaml'], false);
         /** @var User */
-        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-1');
+        $user = $fixtures[$userRef];
 
         $this->login($this->testClient, $user);
 
         $this->testClient->request('GET', '/users');
         $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
 
-        $this->testClient->request('GET', '/users/1/edit');
-        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+        // $this->testClient->request('GET', '/users/' . ($user->getId() + 1) . '/edit');
+        // $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
 
-        $this->testClient->request('GET', '/users/3/edit');
+        $this->testClient->request('GET', '/users/' . ($user->getId() - 1) . '/edit');
         $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function usersWithUserRole()
+    {
+        return [
+            ['user-1'],
+            ['user-2'],
+            ['user-3']
+        ];
     }
 
     public function testCreateUser(): void
     {
-        $this->databaseTool->loadFixtures([UserFixtures::class]);
         $crawler = $this->testClient->request('GET', '/users/create');
         $this->assertResponseIsSuccessful();
         $this->assertSelectorNotExists("input#user_admin");
@@ -126,8 +137,9 @@ class UserControllerTest extends WebTestCase
 
     public function testCreateUserWhenAuthenticatedAsAdmin(): void
     {
+        $fixtures = $this->databaseTool->loadAliceFixture([__DIR__ . '/../DataFixtures/UserTaskFixturesTest.yaml'], false);
         /** @var User */
-        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-admin');
+        $user = $fixtures['user-admin'];
 
         $this->login($this->testClient, $user);
 
@@ -154,10 +166,14 @@ class UserControllerTest extends WebTestCase
         $this->assertTrue(in_array("ROLE_ADMIN", $user->getRoles()), "Admin role has not been added as expected");
     }
 
-    public function testEditUser()
+    /**
+     * @dataProvider usersWithUserRole
+     */
+    public function testEditUser($userRef)
     {
+        $fixtures = $this->databaseTool->loadAliceFixture([__DIR__ . '/../DataFixtures/UserTaskFixturesTest.yaml'], false);
         /** @var User */
-        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-1');
+        $user = $fixtures[$userRef];
 
         $this->login($this->testClient, $user);
 
@@ -185,8 +201,9 @@ class UserControllerTest extends WebTestCase
 
     public function testEditUserWhenAuthenticatedAsAdmin()
     {
+        $fixtures = $this->databaseTool->loadAliceFixture([__DIR__ . '/../DataFixtures/UserTaskFixturesTest.yaml'], false);
         /** @var User */
-        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-admin');
+        $user = $fixtures['user-admin'];
 
         $this->login($this->testClient, $user);
 
