@@ -4,7 +4,6 @@ namespace App\Tests\Controller;
 
 use App\Entity\User;
 use App\Tests\LoginUser;
-use App\DataFixtures\UserFixtures;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
@@ -48,16 +47,29 @@ class SecurityControllerTest extends WebTestCase
         $this->assertSelectorExists('.alert.alert-danger');
     }
 
-    public function testSuccessfullLogin()
+    public function usersWithUserOrAdminRole()
+    {
+        return [
+            ['user-1'],
+            ['user-2'],
+            ['user-admin']
+        ];
+    }
+
+    /**
+     * @dataProvider usersWithUserOrAdminRole
+     */
+    public function testSuccessfullLogin($userRef)
     {
         $crawler = $this->testClient->request('GET', '/login');
 
+        $fixtures = $this->databaseTool->loadAliceFixture([__DIR__ . '/../DataFixtures/UserTaskFixturesTest.yaml'], false);
         /** @var User */
-        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-1');
+        $user = $fixtures[$userRef];
 
         $form = $crawler->selectButton('Se connecter')->form([
             '_username' => $user->getUsername(),
-            '_password' => 'mdp-' . $user->getUsername()
+            '_password' => $user->getPassword()
         ]);
         $this->testClient->submit($form);
 
@@ -72,10 +84,14 @@ class SecurityControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
     }
 
-    public function testSuccessfullLogout()
+    /**
+     * @dataProvider usersWithUserOrAdminRole
+     */
+    public function testSuccessfullLogout($userRef)
     {
+        $fixtures = $this->databaseTool->loadAliceFixture([__DIR__ . '/../DataFixtures/UserTaskFixturesTest.yaml'], false);
         /** @var User */
-        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-1');
+        $user = $fixtures[$userRef];
         $this->login($this->testClient, $user);
 
         $this->testClient->request('GET', '/logout');
