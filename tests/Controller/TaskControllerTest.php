@@ -5,8 +5,6 @@ namespace App\Tests\Controller;
 use App\Entity\Task;
 use App\Entity\User;
 use App\Tests\LoginUser;
-use App\DataFixtures\TaskFixtures;
-use App\DataFixtures\UserFixtures;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
@@ -27,10 +25,46 @@ class TaskControllerTest extends WebTestCase
         $this->databaseTool = $this->testClient->getContainer()->get(DatabaseToolCollection::class)->get();
     }
 
-    public function testTasksPageResponse(): void
+    public function tasksProtectedRoutes()
     {
+        return [
+            ['/tasks'],
+            ['/tasks/create'],
+            ['/tasks/1/edit'],
+            ['/tasks/2/edit'],
+            ['/tasks/1/toggle'],
+            ['/tasks/2/toggle'],
+            ['/tasks/1/delete'],
+            ['/tasks/2/delete']
+        ];
+    }
+
+    public function usersWithUserRole()
+    {
+        return [
+            ['user-1'],
+            ['user-2'],
+            ['user-3']
+        ];
+    }
+
+    public function usersAndOneOfTheirTasks()
+    {
+        return [
+            ['user-1', 'task-1'],
+            ['user-2', 'task-2'],
+            ['user-admin', 'task-admin']
+        ];
+    }
+
+    /**
+     * @dataProvider usersWithUserRole
+     */
+    public function testTasksPageResponse($userRef): void
+    {
+        $fixtures = $this->databaseTool->loadAliceFixture([__DIR__ . '/../DataFixtures/UserTaskFixturesTest.yaml'], false);
         /** @var User */
-        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-1');
+        $user = $fixtures[$userRef];
 
         $this->login($this->testClient, $user);
 
@@ -51,24 +85,15 @@ class TaskControllerTest extends WebTestCase
         );
     }
 
-    public function tasksProtectedRoutes()
+    /**
+     * @dataProvider usersWithUserRole
+     */
+    public function testCreateTaskWithConnectedUserAsAuthor($userRef)
     {
-        return [
-            ['/tasks'],
-            ['/tasks/create'],
-            ['/tasks/1/edit'],
-            ['/tasks/2/edit'],
-            ['/tasks/1/toggle'],
-            ['/tasks/2/toggle'],
-            ['/tasks/1/delete'],
-            ['/tasks/2/delete']
-        ];
-    }
-
-    public function testCreateTaskWithConnectedUserAsAuthor()
-    {
+        $fixtures = $this->databaseTool->loadAliceFixture([__DIR__ . '/../DataFixtures/UserTaskFixturesTest.yaml'], false);
         /** @var User */
-        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-1');
+        $user = $fixtures[$userRef];
+        $nbTasks = count(self::$container->get('doctrine')->getRepository(Task::class)->findBy(['author' => $user->getId()]));
 
         $this->login($this->testClient, $user);
         $crawler = $this->testClient->request('GET', '/tasks/create');
@@ -84,16 +109,20 @@ class TaskControllerTest extends WebTestCase
         $this->testClient->followRedirect();
         $this->assertSelectorExists('.alert.alert-success');
 
-        $this->assertCount(1, $user->getTasks(), "The number of tasks for the current user should be 1.");
+        $this->assertEquals(
+            $nbTasks + 1,
+            count(self::$container->get('doctrine')->getRepository(Task::class)->findBy(['author' => $user->getId()])),
+            "The number of tasks for the current user should be one more than before."
+        );
     }
 
     public function testDeleteTaskForbiddenIfUserIsNotAuthor()
     {
+        $fixtures = $this->databaseTool->loadAliceFixture([__DIR__ . '/../DataFixtures/UserTaskFixturesTest.yaml'], false);
         /** @var User */
-        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-1');
-
+        $user = $fixtures['user-1'];
         /** @var Task */
-        $task = $this->databaseTool->loadFixtures([TaskFixtures::class])->getReferenceRepository()->getReference('task-2');
+        $task = $fixtures['task-2'];
 
         $this->login($this->testClient, $user);
 
@@ -103,11 +132,11 @@ class TaskControllerTest extends WebTestCase
 
     public function testEditTaskForbiddenIfUserIsNotAuthor()
     {
+        $fixtures = $this->databaseTool->loadAliceFixture([__DIR__ . '/../DataFixtures/UserTaskFixturesTest.yaml'], false);
         /** @var User */
-        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-1');
-
+        $user = $fixtures['user-1'];
         /** @var Task */
-        $task = $this->databaseTool->loadFixtures([TaskFixtures::class])->getReferenceRepository()->getReference('task-2');
+        $task = $fixtures['task-2'];
 
         $this->login($this->testClient, $user);
 
@@ -117,11 +146,11 @@ class TaskControllerTest extends WebTestCase
 
     public function testToggleTaskForbiddenIfUserIsNotAuthorOrAdmin()
     {
+        $fixtures = $this->databaseTool->loadAliceFixture([__DIR__ . '/../DataFixtures/UserTaskFixturesTest.yaml'], false);
         /** @var User */
-        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-1');
-
+        $user = $fixtures['user-1'];
         /** @var Task */
-        $task = $this->databaseTool->loadFixtures([TaskFixtures::class])->getReferenceRepository()->getReference('task-2');
+        $task = $fixtures['task-2'];
 
         $this->login($this->testClient, $user);
 
@@ -129,13 +158,16 @@ class TaskControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
-    public function testSuccessfulDeleteTaskAsAuthor()
+    /**
+     * @dataProvider usersAndOneOfTheirTasks
+     */
+    public function testSuccessfulDeleteTaskAsAuthor($userRef, $taskRef)
     {
+        $fixtures = $this->databaseTool->loadAliceFixture([__DIR__ . '/../DataFixtures/UserTaskFixturesTest.yaml'], false);
         /** @var User */
-        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-1');
-
+        $user = $fixtures[$userRef];
         /** @var Task */
-        $task = $this->databaseTool->loadFixtures([TaskFixtures::class])->getReferenceRepository()->getReference('task-1');
+        $task = $fixtures[$taskRef];
         $id = $task->getId();
 
         $this->login($this->testClient, $user);
@@ -151,13 +183,38 @@ class TaskControllerTest extends WebTestCase
         );
     }
 
-    public function testSuccessfulEditTaskAsAuthor()
+    public function testSuccessfulDeleteAnonymousTaskAsAdmin()
     {
+        $fixtures = $this->databaseTool->loadAliceFixture([__DIR__ . '/../DataFixtures/UserTaskFixturesTest.yaml'], false);
         /** @var User */
-        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-1');
-
+        $user = $fixtures['user-admin'];
         /** @var Task */
-        $task = $this->databaseTool->loadFixtures([TaskFixtures::class])->getReferenceRepository()->getReference('task-1');
+        $task = $fixtures['task-anonymous'];
+        $id = $task->getId();
+
+        $this->login($this->testClient, $user);
+
+        $this->testClient->request('GET', '/tasks/' . $task->getId() . '/delete');
+        $this->assertResponseRedirects();
+        $this->testClient->followRedirect();
+        $this->assertSelectorExists('.alert.alert-success');
+
+        $this->assertNull(
+            self::$container->get('doctrine')->getRepository(Task::class)->find($id),
+            "The task has not been removed from DB as expected"
+        );
+    }
+
+    /**
+     * @dataProvider usersAndOneOfTheirTasks
+     */
+    public function testSuccessfulEditTaskAsAuthor($userRef, $taskRef)
+    {
+        $fixtures = $this->databaseTool->loadAliceFixture([__DIR__ . '/../DataFixtures/UserTaskFixturesTest.yaml'], false);
+        /** @var User */
+        $user = $fixtures[$userRef];
+        /** @var Task */
+        $task = $fixtures[$taskRef];
 
         $this->login($this->testClient, $user);
 
@@ -180,13 +237,16 @@ class TaskControllerTest extends WebTestCase
         $this->assertSame("Un contenu modifié", $newTask->getContent(), "The content has not been updated correctly.");
     }
 
-    public function testSuccessfulToggleTaskAsAdmin()
+    /**
+     * @dataProvider usersAndOneOfTheirTasks
+     */
+    public function testSuccessfulToggleTaskAsAuthor($userRef, $taskRef)
     {
+        $fixtures = $this->databaseTool->loadAliceFixture([__DIR__ . '/../DataFixtures/UserTaskFixturesTest.yaml'], false);
         /** @var User */
-        $user = $this->databaseTool->loadFixtures([UserFixtures::class])->getReferenceRepository()->getReference('user-admin');
-
+        $user = $fixtures[$userRef];
         /** @var Task */
-        $task = $this->databaseTool->loadFixtures([TaskFixtures::class])->getReferenceRepository()->getReference('task-1');
+        $task = $fixtures[$taskRef];
         $isDone = $task->isDone();
 
         $this->login($this->testClient, $user);
@@ -199,12 +259,14 @@ class TaskControllerTest extends WebTestCase
         $this->assertNotEquals($isDone, $task->isDone());
     }
 
-    public function testSuccessfulToggleTaskAsAuthor()
+    public function testSuccessfulToggleTaskAsAdmin()
     {
+        $fixtures = $this->databaseTool->loadAliceFixture([__DIR__ . '/../DataFixtures/UserTaskFixturesTest.yaml'], false);
+        /** @var User */
+        $user = $fixtures['user-admin'];
         /** @var Task */
-        $task = $this->databaseTool->loadFixtures([TaskFixtures::class])->getReferenceRepository()->getReference('task-1');
+        $task = $fixtures['task-1'];
         $isDone = $task->isDone();
-        $user = $task->getAuthor();
 
         $this->login($this->testClient, $user);
 

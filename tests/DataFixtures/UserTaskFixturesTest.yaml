@@ -1,0 +1,43 @@
+App\Entity\User:
+  user-admin:
+    username: user-admin
+    email: user-admin@email.com
+    password: "mdp-user-admin"
+    roles: ["ROLE_ADMIN"]
+  user-{1..3}:
+    username: user-<current()>
+    email: user-<current()>\@email.com
+    password: "mdp-user-<current()>"
+    roles: []
+  
+App\Entity\Task:
+  task-1:
+    title: "Ma tâche 1"
+    content: "Le contenu de ma tâche 1"
+    author: "@user-1"
+    toggle: true
+    createdAt: <dateTimeBetween("-50 days", "now")>
+  task-2:
+    title: "Ma tâche 2"
+    content: "Le contenu de ma tâche 2"
+    author: "@user-2"
+    toggle: false
+    createdAt: <dateTimeBetween("-50 days", "now")>
+  task-{3..6}:
+    title: "Ma tâche <current()>"
+    content: "Le contenu de ma tâche <current()>"
+    author: "@user-<numberBetween(1,3)>"
+    toggle: false
+    createdAt: <dateTimeBetween("-50 days", "now")>
+  task-anonymous:
+    title: "Ma tâche anonyme"
+    content: "Le contenu de ma tâche anonyme"
+    author: null
+    toggle: false
+    createdAt: <dateTimeBetween("-50 days", "now")>
+  task-admin:
+    title: "Ma tâche d'admin"
+    content: "Le contenu de ma tâche d'admin"
+    author: "@user-admin"
+    toggle: true
+    createdAt: <dateTimeBetween("-50 days", "now")>
