@@ -33,14 +33,14 @@
 							<td>{{ user.username }}</td>
 							<td>
 								{% if "ROLE_ADMIN" in user.roles %}
-									<span class="glyphicon glyphicon-ok text-success"></span>
+									<i class="bi bi-check-lg text-success text-center"></i>
 								{% endif %}
 							</td>
 							<td>{{ user.email }}</td>
 							<td>{{ user.tasks.count }}
 							</td>
 							<td>
-								<a href="{{ path('user_edit', {'id' : user.id}) }}" class="btn btn-success btn-sm">Edit</a>
+								<a href="{{ path('user_edit', {'id' : user.id}) }}" class="btn btn-secondary btn-sm">Edit</a>
 							</td>
 						</tr>
 					{% endfor %}
