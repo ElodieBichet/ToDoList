@@ -32,20 +32,27 @@
 
 		<!-- Page Content -->
 		<div class="container">
-			<div class="d-flex">
+			<div class="d-flex mb-2">
 				{% if not app.user and 'user_create' != app.request.attributes.get('_route') %}
 					<a href="{{ path('user_create') }}" class="btn btn-primary">S'enregistrer</a>
 				{% endif %}
 				{% if is_granted('ROLE_ADMIN') %}
-					<a href="{{ path('user_list') }}" class="btn btn-primary">Gérer les utilisateurs</a>
+					<a href="{{ path('user_list') }}" class="btn btn-primary">
+						<i class="bi bi-people-fill"></i>
+						Gérer les utilisateurs</a>
 				{% endif %}
 
 				<div class="flex-grow-1"></div>
+
 				{% if app.user %}
 					{% if 'user_edit' != app.request.attributes.get('_route') %}
-						<a href="{{ path('user_edit', {'id' : app.user.id}) }}" class="btn btn-success">Modifier mon compte</a>
+						<a href="{{ path('user_edit', {'id' : app.user.id}) }}" class="btn btn-success">
+							<i class="bi bi-person-circle"></i>
+							Modifier mon compte</a>
 					{% endif %}
-					<a href="{{ path('logout') }}" class="btn btn-danger ms-2">Se déconnecter</a>
+					<a href="{{ path('logout') }}" class="btn btn-danger ms-2">
+						<i class="bi bi-box-arrow-right"></i>
+						Se déconnecter</a>
 				{% endif %}
 
 				{% if not app.user and 'login' != app.request.attributes.get('_route') %}
@@ -56,14 +63,14 @@
 			<div class="row">
 				<div class="col-md-12">
 					{% for flash_message in app.session.flashBag.get('success') %}
-						<div class="alert alert-success" role="alert">
+						<div class="alert alert-success my-2" role="alert">
 							<strong>Superbe !</strong>
 							{{ flash_message }}
 						</div>
 					{% endfor %}
 
 					{% for flash_message in app.session.flashBag.get('error') %}
-						<div class="alert alert-danger" role="alert">
+						<div class="alert alert-danger my-2" role="alert">
 							<strong>Oops !</strong>
 							{{ flash_message }}
 						</div>
@@ -88,10 +95,8 @@
 
 				<hr>
 				<footer>
-					<div class="row">
-						<div class="col-lg-12">
-							<p class="float-end">Copyright &copy; OpenClassrooms</p>
-						</div>
+					<div class="d-flex justify-content-end">
+						<p>Copyright &copy; OpenClassrooms</p>
 					</div>
 				</footer>
 
