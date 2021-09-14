@@ -10,13 +10,14 @@
 {% block body %}
 	<div class="row">
 		{{ form_start(form, {'action' : path('user_edit', {'id' : user.id})}) }}
-		{{ form_row(form.username) }}
-		{{ form_row(form.password) }}
-		{{ form_row(form.email) }}
+		{{ form_row(form.username, {'row_attr': {'class': 'mb-2'}}) }}
+		{{ form_row(form.password.first, {'row_attr' : {'class' : 'mb-2'}}) }}
+		{{ form_row(form.password.second, {'row_attr' : {'class' : 'mb-2'}}) }}
+		{{ form_row(form.email, {'row_attr': {'class': 'mb-2'}}) }}
 		{% if not is_granted('ROLE_ADMIN') %}
 			{% do form.admin.setRendered() %}
 		{% endif %}
-		<button type="submit" class="btn btn-success pull-right">Modifier</button>
+		<button type="submit" class="btn btn-success float-end">Modifier</button>
 		{{ form_end(form) }}
 	</div>
 {% endblock %}

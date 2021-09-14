@@ -8,21 +8,27 @@
 
 {% block body %}
 	{% if users|length == 0 %}
-		<div class="alert alert-warning" role="alert">
+		<div class="alert alert-warning my-2" role="alert">
 			Il n'y a pas encore d'utilisateur enregistré.
-			<a href="{{ path('user_create') }}" class="btn btn-warning pull-right">Créer un utilisateur</a>
+			<a href="{{ path('user_create') }}" class="btn btn-warning float-end">
+				<i class="bi bi-person-plus-fill"></i>
+				Créer un utilisateur</a>
 		</div>
 	{% else %}
 		<div class="row">
-			<a href="{{ path('user_create') }}" class="btn btn-primary">Créer un utilisateur</a>
+			<div class="d-flex justify-content-end">
+				<a href="{{ path('user_create') }}" class="btn btn-info">
+					<i class="bi bi-person-plus-fill"></i>
+					Créer un utilisateur</a>
+			</div>
 			<table class="table">
 				<thead>
 					<tr>
 						<th>#</th>
 						<th>Nom d'utilisateur</th>
 						<th>Admin</th>
-						<th>Adresse d'utilisateur</th>
-						<th>Nb de tâches</th>
+						<th class="d-none d-md-table-cell">Adresse d'utilisateur</th>
+						<th class="d-none d-md-table-cell">Nb de tâches</th>
 						<th>Actions</th>
 					</tr>
 				</thead>
@@ -33,14 +39,18 @@
 							<td>{{ user.username }}</td>
 							<td>
 								{% if "ROLE_ADMIN" in user.roles %}
-									<span class="glyphicon glyphicon-ok text-success"></span>
+									<i class="bi bi-check-lg text-success text-center"></i>
 								{% endif %}
 							</td>
-							<td>{{ user.email }}</td>
-							<td>{{ user.tasks.count }}
+							<td class="d-none d-md-table-cell">{{ user.email }}</td>
+							<td class="d-none d-md-table-cell">{{ user.tasks.count }}
 							</td>
 							<td>
-								<a href="{{ path('user_edit', {'id' : user.id}) }}" class="btn btn-success btn-sm">Edit</a>
+								<a href="{{ path('user_edit', {'id' : user.id}) }}" class="btn btn-secondary btn-sm">
+									<span class="d-none d-sm-inline">Editer
+									</span>
+									<i class="bi bi-pencil-square"></i>
+								</a>
 							</td>
 						</tr>
 					{% endfor %}

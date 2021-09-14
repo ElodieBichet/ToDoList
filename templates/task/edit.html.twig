@@ -1,11 +1,23 @@
 {% extends 'base.html.twig' %}
 
-{% block body %}
-    <div class="row">
-        {{ form_start(form, {'action' : path('task_edit', { 'id' : task.id })}) }}
-            {{ form_widget(form) }}
+{% block header_img %}<img class="img-fluid w-100" src="{{ asset('img/todolist_content.jpg') }}" alt="todo list">
+{% endblock %}
 
-            <button type="submit" class="btn btn-success pull-right">Modifier</button>
-        {{ form_end(form) }}
-    </div>
+{% block body %}
+	<div class="row">
+		{{ form_start(form, {'action' : path('task_edit', { 'id' : task.id })}) }}
+		{{ form_row(form.title, {'row_attr': {'class': 'mb-2'}}) }}
+		{{ form_row(form.content, {'row_attr': {'class': 'mb-2'}}) }}
+
+		<div class="d-flex justify-content-end my-2">
+			<button type="submit" class="btn btn-success">Modifier</button>
+		</div>
+		{{ form_end(form) }}
+
+		<div class="d-flex justify-content-start my-2">
+			<a href="{{ path('task_list') }}" class="btn btn-light">
+				<i class="bi bi-journals"></i>
+				Retour à la liste des tâches</a>
+		</div>
+	</div>
 {% endblock %}
