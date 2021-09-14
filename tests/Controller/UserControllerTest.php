@@ -93,13 +93,13 @@ class UserControllerTest extends WebTestCase
         $this->login($this->testClient, $user);
 
         $this->testClient->request('GET', '/users');
-        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
-
-        // $this->testClient->request('GET', '/users/' . ($user->getId() + 1) . '/edit');
-        // $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN, "A simple user should not have access to user list");
 
         $this->testClient->request('GET', '/users/' . ($user->getId() - 1) . '/edit');
-        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN, "A simple user should not be able to edit another user");
+
+        $this->testClient->request('GET', '/users/' . ($user->getId() - 1) . '/delete');
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN, "A simple user should not be able to delete another user");
     }
 
     public function usersWithUserRole()
@@ -229,5 +229,27 @@ class UserControllerTest extends WebTestCase
         $this->assertSame("New username", $updateduser->getUsername(), "The username has not been updated correctly.");
         $this->assertSame("new-username@email.com", $updateduser->getEmail(), "The email has not been updated correctly.");
         $this->assertTrue(in_array("ROLE_ADMIN", $updateduser->getRoles()), "Admin role has not been added as expected");
+    }
+
+    public function testSuccessfulDeleteUserAsAdmin()
+    {
+        $fixtures = $this->databaseTool->loadAliceFixture([__DIR__ . '/../DataFixtures/UserTaskFixturesTest.yaml'], false);
+        /** @var User */
+        $user = $fixtures['user-admin'];
+        /** @var User */
+        $userToDelete = $fixtures['user-1'];
+        $id = $userToDelete->getId();
+
+        $this->login($this->testClient, $user);
+
+        $this->testClient->request('GET', '/users/' . $id . '/delete');
+        $this->assertResponseRedirects();
+        $this->testClient->followRedirect();
+        $this->assertSelectorExists('.alert.alert-success');
+
+        $this->assertNull(
+            self::$container->get('doctrine')->getRepository(User::class)->find($id),
+            "The user has not been removed from DB as expected"
+        );
     }
 }

@@ -172,7 +172,7 @@ class TaskControllerTest extends WebTestCase
 
         $this->login($this->testClient, $user);
 
-        $this->testClient->request('GET', '/tasks/' . $task->getId() . '/delete');
+        $this->testClient->request('GET', '/tasks/' . $id . '/delete');
         $this->assertResponseRedirects();
         $this->testClient->followRedirect();
         $this->assertSelectorExists('.alert.alert-success');
