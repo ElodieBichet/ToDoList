@@ -1,9 +1,13 @@
 {% extends 'base.html.twig' %}
 
+{% block header_img %}<img class="img-fluid w-100" src="{{ asset('img/todolist_content.jpg') }}" alt="todo list">
+{% endblock %}
+
 {% block body %}
 	<div class="row">
 		{{ form_start(form, {'action' : path('task_edit', { 'id' : task.id })}) }}
-		{{ form_widget(form) }}
+		{{ form_row(form.title, {'row_attr': {'class': 'mb-2'}}) }}
+		{{ form_row(form.content, {'row_attr': {'class': 'mb-2'}}) }}
 
 		<div class="d-flex justify-content-end my-2">
 			<button type="submit" class="btn btn-success">Modifier</button>

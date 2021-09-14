@@ -7,9 +7,9 @@
 {% block body %}{% endblock %}
 
 {% block header_img %}
-	<div class="position-relative">
+	<div class="position-relative min-h-200">
 		{{ parent() }}
-		<div class="position-absolute top-50 start-50 translate-middle text-center">
+		<div class="position-absolute top-50 start-50 translate-middle text-center bg-white p-2 rounded">
 			<a href="{{ path('task_create') }}" class="btn btn-success m-1">
 				<i class="bi bi-journal-plus"></i>
 				Créer une nouvelle tâche</a>

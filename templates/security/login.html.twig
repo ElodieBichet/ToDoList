@@ -1,24 +1,23 @@
 {% extends 'base.html.twig' %}
 
-{% block body %}
+{% block body %}{% endblock %}
+
+{% block header_img %}
 	{% if error %}
 		<div class="alert alert-danger my-2" role="alert">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
 	{% endif %}
-{% endblock %}
-
-{% block header_img %}
-	<div class="position-relative">
+	<div class="position-relative min-h-200">
 		{{ parent() }}
-		<div class="position-absolute top-50 start-50 translate-middle bg-white p-2">
+		<div class="position-absolute top-50 start-50 translate-middle bg-white p-2 w-75 rounded">
 
-			<form action="{{ path('login_check') }}" method="post">
-				<div class="d-md-flex justify-content-between m-1">
-					<label for="username">Nom d'utilisateur :</label>
-					<input class="ms-1" type="text" id="username" name="_username" value="{{ last_username }}"/>
+			<form action="{{ path('login_check') }}" method="post" class="d-md-flex justify-content-between">
+				<div class="form-floating m-1 flex-grow-1">
+					<input class="form-control" type="text" id="username" name="_username" value="{{ last_username }}" placeholder="Nom d'utilisateur"/>
+					<label class="text-nowrap" for="username">Nom d'utilisateur</label>
 				</div>
-				<div class="d-md-flex justify-content-between m-1">
-					<label for="password">Mot de passe :</label>
-					<input class="ms-1" type="password" id="password" name="_password"/>
+				<div class="form-floating m-1 flex-grow-1">
+					<input class="form-control" type="password" id="password" name="_password" placeholder="Mot de passe"/>
+					<label class="text-nowrap" for="password">Mot de passe</label>
 				</div>
 				<div class="d-md-flex justify-content-end m-1">
 					<button class="btn btn-success" type="submit">Se connecter</button>

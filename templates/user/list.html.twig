@@ -27,8 +27,8 @@
 						<th>#</th>
 						<th>Nom d'utilisateur</th>
 						<th>Admin</th>
-						<th>Adresse d'utilisateur</th>
-						<th>Nb de tâches</th>
+						<th class="d-none d-md-table-cell">Adresse d'utilisateur</th>
+						<th class="d-none d-md-table-cell">Nb de tâches</th>
 						<th>Actions</th>
 					</tr>
 				</thead>
@@ -42,11 +42,13 @@
 									<i class="bi bi-check-lg text-success text-center"></i>
 								{% endif %}
 							</td>
-							<td>{{ user.email }}</td>
-							<td>{{ user.tasks.count }}
+							<td class="d-none d-md-table-cell">{{ user.email }}</td>
+							<td class="d-none d-md-table-cell">{{ user.tasks.count }}
 							</td>
 							<td>
-								<a href="{{ path('user_edit', {'id' : user.id}) }}" class="btn btn-secondary btn-sm">Editer
+								<a href="{{ path('user_edit', {'id' : user.id}) }}" class="btn btn-secondary btn-sm">
+									<span class="d-none d-sm-inline">Editer
+									</span>
 									<i class="bi bi-pencil-square"></i>
 								</a>
 							</td>

@@ -30,7 +30,8 @@ class UserType extends AbstractType
                 'label' => "Administrateur",
                 'required' => false,
                 'mapped' => false,
-                'data' => ($builder->getData()->getId()) ? in_array("ROLE_ADMIN", $builder->getData()->getRoles()) : false
+                'data' => ($builder->getData()->getId()) ? in_array("ROLE_ADMIN", $builder->getData()->getRoles()) : false,
+                'row_attr' => ['class' => 'mb-2']
             ]);
     }
 
