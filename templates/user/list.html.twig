@@ -24,7 +24,7 @@
 			<table class="table">
 				<thead>
 					<tr>
-						<th>#</th>
+						<th>Id</th>
 						<th>Nom d'utilisateur</th>
 						<th>Admin</th>
 						<th class="d-none d-md-table-cell">Adresse d'utilisateur</th>
@@ -35,7 +35,7 @@
 				<tbody>
 					{% for user in users %}
 						<tr>
-							<th scope="row">{{ loop.index }}</th>
+							<th scope="row">#{{ user.id }}</th>
 							<td>{{ user.username }}</td>
 							<td>
 								{% if "ROLE_ADMIN" in user.roles %}
