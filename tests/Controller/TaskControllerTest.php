@@ -4,7 +4,7 @@ namespace App\Tests\Controller;
 
 use App\Entity\Task;
 use App\Entity\User;
-use App\Tests\LoginUser;
+use App\Tests\Utils\LoginUser;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;

@@ -16,7 +16,7 @@ class UserController extends AbstractController
      * @Route("/users", name="user_list")
      * @IsGranted("ROLE_ADMIN", message="You have to be authenticated as an admin to see this page")
      */
-    public function listAction()
+    public function listUsersAction()
     {
         return $this->render('user/list.html.twig', ['users' => $this->getDoctrine()->getRepository(User::class)->findAll()]);
     }
@@ -24,7 +24,7 @@ class UserController extends AbstractController
     /**
      * @Route("/users/create", name="user_create")
      */
-    public function createAction(Request $request, UserPasswordEncoderInterface $encoder)
+    public function createUserAction(Request $request, UserPasswordEncoderInterface $encoder)
     {
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
@@ -59,7 +59,7 @@ class UserController extends AbstractController
      * @Route("/users/{id}/edit", name="user_edit")
      * @IsGranted("USER_EDIT", subject="user", message="You can only edit your own account")
      */
-    public function editAction(User $user, Request $request, UserPasswordEncoderInterface $encoder)
+    public function editUserAction(User $user, Request $request, UserPasswordEncoderInterface $encoder)
     {
         $form = $this->createForm(UserType::class, $user);
 

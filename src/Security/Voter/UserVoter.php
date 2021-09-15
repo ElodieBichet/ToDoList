@@ -26,12 +26,12 @@ class UserVoter extends Voter
             return false;
         }
 
-        // ROLE_ADMIN can do anything!
+        // ROLE_ADMIN can do anything on users!
         if (in_array('ROLE_ADMIN', $user->getRoles())) {
             return true;
         }
 
-        // ... (check conditions and return true to grant permission) ...
+        // ROLE_USER can edit or delete only one's own user account
         if (in_array($attribute, ['USER_EDIT', 'USER_DELETE'])) {
             return $user === $subject;
         }

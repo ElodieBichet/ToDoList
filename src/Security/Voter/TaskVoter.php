@@ -28,11 +28,12 @@ class TaskVoter extends Voter
         }
 
         if ($attribute == 'TASK_TOGGLE') {
+            // user must be the author of the task or have admin role
             return $user === $subject->getAuthor() || in_array('ROLE_ADMIN', $user->getRoles());
         }
 
-        // ... (check conditions and return true to grant permission) ...
         if (in_array($attribute, ['TASK_EDIT', 'TASK_DELETE'])) {
+            // user must be the author of the task, or have admin role in case of anonymous task 
             return ($user === $subject->getAuthor()) || (in_array('ROLE_ADMIN', $user->getRoles()) && null === $subject->getAuthor());
         }
 
