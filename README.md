@@ -20,6 +20,7 @@ Work carried out as part of the training course "Application Developer - PHP / S
 3.  __[Tests](#tests)__
   * [Configure PHP Unit](#configure-php-unit)
   * [Run the tests](#run-the-tests)
+4. __[Contribution](#contribution)
 
 ---
 ## PREREQUISITE AND TECHNOLOGIES
@@ -34,8 +35,10 @@ Versions used in this project:
 See more information on technical requirements in the [Symfony official documentation](https://symfony.com/doc/4.4/setup.html#technical-requirements).
 
 ### __Framework and libraries__
-Framework: __Symfony ^4.4.29__
+Framework: __Symfony ^4.4.29__  
 Dependencies manager: __Composer ^1.11.99.2__  
+
+To run tests, you also need __PHPUnit__. See requirements in [PHPUnit documentation - EN](https://phpunit.readthedocs.io/en/latest/installation.html#requirements) / [FR](https://phpunit.readthedocs.io/fr/latest/installation.html#pre-requis)  
 
 ---
 ## INSTALLATION
@@ -98,3 +101,8 @@ To run all tests, use the following command:
 $ ./vendor/bin/phpunit
 ```
 See more details and options about command-line test runner in [PHP Unit documentation - EN](https://phpunit.readthedocs.io/en/latest/textui.html) / [FR](https://phpunit.readthedocs.io/fr/latest/textui.html).
+
+---
+## CONTRIBUTION
+
+See [Contributing file](CONTRIB.md).
