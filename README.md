@@ -1,8 +1,8 @@
-ToDoList
-========
+# ToDoList
 
 Symfony application which need to be upgraded, tested and documented.  
-Work carried out as part of the training course "Application Developer - PHP / Symfony" on OpenClassrooms.
+Work carried out as part of the training course "Application Developer - PHP / Symfony" on OpenClassrooms.  
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/ElodieBichet/ToDoList/main)  
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/ca0c448bb3ec4fdf914f8bcfb32fd140)](https://www.codacy.com/gh/ElodieBichet/ToDoList/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ElodieBichet/ToDoList&amp;utm_campaign=Badge_Grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/ca0c448bb3ec4fdf914f8bcfb32fd140)](https://www.codacy.com/gh/ElodieBichet/ToDoList/dashboard?utm_source=github.com&utm_medium=referral&utm_content=ElodieBichet/ToDoList&utm_campaign=Badge_Coverage)

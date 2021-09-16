@@ -1,4 +1,4 @@
-ToDoList
+# Contribution to ToDoList App
 ========
 
 English version - __[How to contribute to the project](#how-to-contribute-to-the-project)__  
