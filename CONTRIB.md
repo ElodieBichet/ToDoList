@@ -31,6 +31,7 @@ Then update the coverage test file for Codacy, with the following command:
 ```
 $ ./vendor/bin/phpunit --coverage-clover tests/coverage.xml
 ```
+Don't forget to commit this new *tests/coverage.xml* file!
 
 ### 5/ Créez une pull request avec votre branche
 Finally, push your changes and create a pull request.  
@@ -66,10 +67,11 @@ Mettez ensuite à jour le fichier de test coverage pour Codacy, avec la commande
 ```
 $ ./vendor/bin/phpunit --coverage-clover tests/coverage.xml
 ```
+N'oubliez pas de "commiter" ce nouveau fichier *tests/coverage.xml*!
 
 ### 5/ Créez une pull request avec votre branche
 Enfin, pushez vos modifications et créez une pull request.  
 Plus de détails à propos des PR sur [la documentation GitHub](https://docs.github.com/en/github/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests).  
 
-Si votre contribution est validée, elle sera intégrée à la branche principale du projet.
+Si votre contribution est validée, elle sera intégrée à la branche principale du projet.  
 Merci !
