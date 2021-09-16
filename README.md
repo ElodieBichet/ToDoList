@@ -20,7 +20,7 @@ Work carried out as part of the training course "Application Developer - PHP / S
 3.  __[Tests](#tests)__
   * [Configure PHP Unit](#configure-php-unit)
   * [Run the tests](#run-the-tests)
-4. __[Contribution](#contribution)
+4. __[Contribution](#contribution)__
 
 ---
 ## PREREQUISITE AND TECHNOLOGIES

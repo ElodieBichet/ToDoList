@@ -1,7 +1,7 @@
 ToDoList
 ========
 
-English version - __[How to contribute to the project](#how-to-contribute-to-the-project)__
+English version - __[How to contribute to the project](#how-to-contribute-to-the-project)__  
 Version française - __[Comment contribuer au projet](#comment-contribuer-au-projet)__  
 
 ---
