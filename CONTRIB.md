@@ -33,7 +33,7 @@ $ ./vendor/bin/phpunit --coverage-clover tests/coverage.xml
 ```
 Don't forget to commit this new *tests/coverage.xml* file!
 
-### 5/ Créez une pull request avec votre branche
+### 5/ Create a pull request
 Finally, push your changes and create a pull request.  
 More details about PR on [GitHub documentation](https://docs.github.com/en/github/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests).  
 
@@ -69,7 +69,7 @@ $ ./vendor/bin/phpunit --coverage-clover tests/coverage.xml
 ```
 N'oubliez pas de "commiter" ce nouveau fichier *tests/coverage.xml*!
 
-### 5/ Créez une pull request avec votre branche
+### 5/ Créez une pull request
 Enfin, pushez vos modifications et créez une pull request.  
 Plus de détails à propos des PR sur [la documentation GitHub](https://docs.github.com/en/github/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests).  
 
