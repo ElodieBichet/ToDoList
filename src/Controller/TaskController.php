@@ -14,7 +14,7 @@ class TaskController extends AbstractController
     /**
      * @Route("/tasks", name="task_list")
      */
-    public function listAction()
+    public function listTasksAction()
     {
         return $this->render('task/list.html.twig', ['tasks' => $this->getDoctrine()->getRepository(Task::class)->findAll()]);
     }
@@ -22,7 +22,7 @@ class TaskController extends AbstractController
     /**
      * @Route("/tasks/create", name="task_create")
      */
-    public function createAction(Request $request)
+    public function createTaskAction(Request $request)
     {
         $task = new Task;
         $form = $this->createForm(TaskType::class, $task);
@@ -47,7 +47,7 @@ class TaskController extends AbstractController
      * @Route("/tasks/{id}/edit", name="task_edit")
      * @IsGranted("TASK_EDIT", subject="task", message="You can only edit your own tasks (and anonymous tasks if you are admin)")
      */
-    public function editAction(Task $task, Request $request)
+    public function editTaskAction(Task $task, Request $request)
     {
         $form = $this->createForm(TaskType::class, $task);
 

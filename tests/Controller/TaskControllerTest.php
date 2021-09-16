@@ -4,7 +4,7 @@ namespace App\Tests\Controller;
 
 use App\Entity\Task;
 use App\Entity\User;
-use App\Tests\LoginUser;
+use App\Tests\Utils\LoginUser;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
@@ -77,6 +77,8 @@ class TaskControllerTest extends WebTestCase
      */
     public function testLoginRedirectionIfNotAuthenticated($uri): void
     {
+        $this->databaseTool->loadAliceFixture([__DIR__ . '/../DataFixtures/UserTaskFixturesTest.yaml'], false);
+
         $this->testClient->request('GET', $uri);
         $this->assertResponseRedirects(
             "http://localhost/login",

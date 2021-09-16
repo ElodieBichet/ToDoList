@@ -3,7 +3,7 @@
 namespace App\Tests\Controller;
 
 use App\Entity\User;
-use App\Tests\LoginUser;
+use App\Tests\Utils\LoginUser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
 use Liip\TestFixturesBundle\Services\DatabaseTools\AbstractDatabaseTool;
