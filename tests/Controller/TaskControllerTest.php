@@ -77,6 +77,8 @@ class TaskControllerTest extends WebTestCase
      */
     public function testLoginRedirectionIfNotAuthenticated($uri): void
     {
+        $this->databaseTool->loadAliceFixture([__DIR__ . '/../DataFixtures/UserTaskFixturesTest.yaml'], false);
+
         $this->testClient->request('GET', $uri);
         $this->assertResponseRedirects(
             "http://localhost/login",

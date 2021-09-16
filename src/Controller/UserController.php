@@ -35,10 +35,12 @@ class UserController extends AbstractController
             $em = $this->getDoctrine()->getManager();
             $password = $encoder->encodePassword($user, $user->getPassword());
             $user->setPassword($password);
+            $redirectRoute = 'login';
 
             // Add ROLE_ADMIN to user roles if admin checkbox is checked 
             if ($this->isGranted("ROLE_ADMIN")) {
                 ($form->get('admin')->getData()) ? $user->setRoles(['ROLE_ADMIN']) : $user->setRoles([]);
+                $redirectRoute = 'user_list';
             }
 
             $em->persist($user);
@@ -46,10 +48,7 @@ class UserController extends AbstractController
 
             $this->addFlash('success', "Le compte utilisateur a bien été créé.");
 
-            if ($this->isGranted("ROLE_ADMIN")) {
-                return $this->redirectToRoute('user_list');
-            }
-            return $this->redirectToRoute('login');
+            return $this->redirectToRoute($redirectRoute);
         }
 
         return $this->render('user/create.html.twig', ['form' => $form->createView()]);
@@ -68,20 +67,19 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $password = $encoder->encodePassword($user, $user->getPassword());
             $user->setPassword($password);
+            $redirectRoute = 'homepage';
 
             // Add/Remove ROLE_ADMIN to/from user roles if admin checkbox is/isn't checked
             if ($this->isGranted("ROLE_ADMIN")) {
                 ($form->get('admin')->getData()) ? $user->setRoles(['ROLE_ADMIN']) : $user->setRoles([]);
+                $redirectRoute = 'user_list';
             }
 
             $this->getDoctrine()->getManager()->flush();
 
             $this->addFlash('success', "Le compte utilisateur a bien été modifié");
 
-            if ($this->isGranted("ROLE_ADMIN")) {
-                return $this->redirectToRoute('user_list');
-            }
-            return $this->redirectToRoute('homepage');
+            return $this->redirectToRoute($redirectRoute);
         }
 
         return $this->render('user/edit.html.twig', ['form' => $form->createView(), 'user' => $user]);

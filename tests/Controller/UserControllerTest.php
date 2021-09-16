@@ -37,6 +37,8 @@ class UserControllerTest extends WebTestCase
      */
     public function testLoginRedirectionIfNotAuthenticated($uri): void
     {
+        $this->databaseTool->loadAliceFixture([__DIR__ . '/../DataFixtures/UserTaskFixturesTest.yaml'], false);
+
         $this->testClient->request('GET', $uri);
         $this->assertResponseRedirects(
             "http://localhost/login",
@@ -50,7 +52,9 @@ class UserControllerTest extends WebTestCase
         return [
             ['/users'],
             ['/users/1/edit'],
-            ['/users/2/edit']
+            ['/users/2/edit'],
+            ['/users/1/delete'],
+            ['/users/2/delete']
         ];
     }
 
