@@ -3,27 +3,11 @@
 namespace App\Tests\Controller;
 
 use App\Entity\User;
-use App\Tests\Utils\LoginUser;
+use App\Tests\Utils\CustomFunctionalTestCase;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
-use Liip\TestFixturesBundle\Services\DatabaseTools\AbstractDatabaseTool;
 
-class UserControllerTest extends WebTestCase
+class UserControllerTest extends CustomFunctionalTestCase
 {
-    use LoginUser;
-
-    /** @var AbstractDatabaseTool */
-    protected $databaseTool;
-
-    private $testClient = null;
-
-    public function setUp(): void
-    {
-        $this->testClient = static::createClient();
-        $this->databaseTool = $this->testClient->getContainer()->get(DatabaseToolCollection::class)->get();
-    }
-
     public function testUsersPageResponse()
     {
         $this->testClient->request('GET', '/users/create');
@@ -47,17 +31,6 @@ class UserControllerTest extends WebTestCase
         );
     }
 
-    public function usersProtectedRoutes()
-    {
-        return [
-            ['/users'],
-            ['/users/1/edit'],
-            ['/users/2/edit'],
-            ['/users/1/delete'],
-            ['/users/2/delete']
-        ];
-    }
-
     /**
      * @dataProvider usersAdminRoutes
      */
@@ -73,16 +46,6 @@ class UserControllerTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('h1', $h1Text);
-    }
-
-    public function usersAdminRoutes()
-    {
-        return [
-            ['/users/create', 'Créer un utilisateur'],
-            ['/users', 'Liste des utilisateurs'],
-            ['/users/1/edit', 'Modifier'],
-            ['/users/2/edit', 'Modifier']
-        ];
     }
 
     /**
@@ -104,15 +67,6 @@ class UserControllerTest extends WebTestCase
 
         $this->testClient->request('GET', '/users/' . ($user->getId() - 1) . '/delete');
         $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN, "A simple user should not be able to delete another user");
-    }
-
-    public function usersWithUserRole()
-    {
-        return [
-            ['user-1'],
-            ['user-2'],
-            ['user-3']
-        ];
     }
 
     public function testCreateUser(): void

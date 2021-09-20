@@ -3,27 +3,11 @@
 namespace App\Tests\Controller;
 
 use App\Entity\User;
-use App\Tests\Utils\LoginUser;
+use App\Tests\Utils\CustomFunctionalTestCase;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
-use Liip\TestFixturesBundle\Services\DatabaseTools\AbstractDatabaseTool;
 
-class SecurityControllerTest extends WebTestCase
+class SecurityControllerTest extends CustomFunctionalTestCase
 {
-    use LoginUser;
-
-    /** @var AbstractDatabaseTool */
-    protected $databaseTool;
-
-    private $testClient = null;
-
-    public function setUp(): void
-    {
-        $this->testClient = static::createClient();
-        $this->databaseTool = $this->testClient->getContainer()->get(DatabaseToolCollection::class)->get();
-    }
-
     public function testDisplayLoginForm()
     {
         $this->testClient->request('GET', '/login');
@@ -45,15 +29,6 @@ class SecurityControllerTest extends WebTestCase
         $this->assertResponseRedirects();
         $this->testClient->followRedirect();
         $this->assertSelectorExists('.alert.alert-danger');
-    }
-
-    public function usersWithUserOrAdminRole()
-    {
-        return [
-            ['user-1'],
-            ['user-2'],
-            ['user-admin']
-        ];
     }
 
     /**
