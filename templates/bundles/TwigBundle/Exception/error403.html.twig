@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block header_img %}<img class="img-fluid w-100" src="{{ asset('img/todolist_content.jpg') }}" alt="todo list">
+{% endblock %}
+
+{% block body %}
+	<h1>Accès refusé</h1>
+
+	<p class="h5">
+		Vous n'avez pas accès à cette page pour les raisons suivantes.
+		{{ exception.message }}
+	</p>
+	<p>
+		<a class="btn btn-light" href="{{ path('homepage') }}">
+			<i class="bi bi-house-door-fill"></i>
+			Revenir à la page d'accueil</a>
+	</p>
+{% endblock %}
