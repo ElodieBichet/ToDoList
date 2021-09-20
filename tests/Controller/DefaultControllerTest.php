@@ -3,28 +3,10 @@
 namespace App\Tests\Controller;
 
 use App\Entity\User;
-use App\Tests\Utils\LoginUser;
-use App\Tests\Utils\DataProviders;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
-use Liip\TestFixturesBundle\Services\DatabaseTools\AbstractDatabaseTool;
+use App\Tests\Utils\CustomFunctionalTestCase;
 
-class DefaultControllerTest extends WebTestCase
+class DefaultControllerTest extends CustomFunctionalTestCase
 {
-    use LoginUser;
-    use DataProviders;
-
-    /** @var AbstractDatabaseTool */
-    protected $databaseTool;
-
-    private $testClient = null;
-
-    public function setUp(): void
-    {
-        $this->testClient = static::createClient();
-        $this->databaseTool = $this->testClient->getContainer()->get(DatabaseToolCollection::class)->get();
-    }
-
     /**
      * @dataProvider usersWithUserOrAdminRole
      */
