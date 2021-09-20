@@ -14,7 +14,7 @@ class UserController extends AbstractController
 {
     /**
      * @Route("/users", name="user_list")
-     * @IsGranted("ROLE_ADMIN", message="You have to be authenticated as an admin to see this page")
+     * @IsGranted("ROLE_ADMIN", message="Vous devez être authentifié comme administrateur pour voir cette page.")
      */
     public function listUsersAction()
     {
@@ -56,7 +56,7 @@ class UserController extends AbstractController
 
     /**
      * @Route("/users/{id}/edit", name="user_edit")
-     * @IsGranted("USER_EDIT", subject="user", message="You can only edit your own account")
+     * @IsGranted("USER_EDIT", subject="user", message="Vous ne pouvez modifier que votre propre compte utilisateur.")
      */
     public function editUserAction(User $user, Request $request, UserPasswordEncoderInterface $encoder)
     {
@@ -87,7 +87,7 @@ class UserController extends AbstractController
 
     /**
      * @Route("/users/{id}/delete", name="user_delete")
-     * @IsGranted("USER_DELETE", subject="user", message="You can't delete users")
+     * @IsGranted("USER_DELETE", subject="user", message="Vous n'avez pas les droits pour supprimer des utilisateurs.")
      */
     public function deleteUserAction(User $user)
     {

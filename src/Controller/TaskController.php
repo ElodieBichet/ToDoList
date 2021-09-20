@@ -45,7 +45,8 @@ class TaskController extends AbstractController
 
     /**
      * @Route("/tasks/{id}/edit", name="task_edit")
-     * @IsGranted("TASK_EDIT", subject="task", message="You can only edit your own tasks (and anonymous tasks if you are admin)")
+     * @IsGranted("TASK_EDIT", subject="task",
+     *  message="Vous ne pouvez modifier que vos propres tâches (ou les tâches anonymes si vous êtes admin).")
      */
     public function editTaskAction(Task $task, Request $request)
     {
@@ -69,7 +70,8 @@ class TaskController extends AbstractController
 
     /**
      * @Route("/tasks/{id}/toggle", name="task_toggle")
-     * @IsGranted("TASK_TOGGLE", subject="task", message="You can only manage your own tasks if you're not admin")
+     * @IsGranted("TASK_TOGGLE", subject="task",
+     *  message="Vous devez avoir un rôle d'administrateur pour modifier le statut d'une tâche dont vous n'êtes pas l'auteur.")
      */
     public function toggleTaskAction(Task $task)
     {
@@ -84,7 +86,8 @@ class TaskController extends AbstractController
 
     /**
      * @Route("/tasks/{id}/delete", name="task_delete")
-     * @IsGranted("TASK_DELETE", subject="task", message="You can only delete your own tasks")
+     * @IsGranted("TASK_DELETE", subject="task",
+     *  message="Vous ne pouvez supprimer que vos propres tâches (ou les tâches anonymes si vous êtes admin).")
      */
     public function deleteTaskAction(Task $task)
     {
