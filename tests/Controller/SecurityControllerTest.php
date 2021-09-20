@@ -4,6 +4,7 @@ namespace App\Tests\Controller;
 
 use App\Entity\User;
 use App\Tests\Utils\LoginUser;
+use App\Tests\Utils\DataProviders;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
@@ -12,6 +13,7 @@ use Liip\TestFixturesBundle\Services\DatabaseTools\AbstractDatabaseTool;
 class SecurityControllerTest extends WebTestCase
 {
     use LoginUser;
+    use DataProviders;
 
     /** @var AbstractDatabaseTool */
     protected $databaseTool;
@@ -45,15 +47,6 @@ class SecurityControllerTest extends WebTestCase
         $this->assertResponseRedirects();
         $this->testClient->followRedirect();
         $this->assertSelectorExists('.alert.alert-danger');
-    }
-
-    public function usersWithUserOrAdminRole()
-    {
-        return [
-            ['user-1'],
-            ['user-2'],
-            ['user-admin']
-        ];
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Tests\Controller;
 use App\Entity\Task;
 use App\Entity\User;
 use App\Tests\Utils\LoginUser;
+use App\Tests\Utils\DataProviders;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
@@ -13,6 +14,7 @@ use Liip\TestFixturesBundle\Services\DatabaseTools\AbstractDatabaseTool;
 class TaskControllerTest extends WebTestCase
 {
     use LoginUser;
+    use DataProviders;
 
     /** @var AbstractDatabaseTool */
     protected $databaseTool;
@@ -23,38 +25,6 @@ class TaskControllerTest extends WebTestCase
     {
         $this->testClient = static::createClient();
         $this->databaseTool = $this->testClient->getContainer()->get(DatabaseToolCollection::class)->get();
-    }
-
-    public function tasksProtectedRoutes()
-    {
-        return [
-            ['/tasks'],
-            ['/tasks/create'],
-            ['/tasks/1/edit'],
-            ['/tasks/2/edit'],
-            ['/tasks/1/toggle'],
-            ['/tasks/2/toggle'],
-            ['/tasks/1/delete'],
-            ['/tasks/2/delete']
-        ];
-    }
-
-    public function usersWithUserRole()
-    {
-        return [
-            ['user-1'],
-            ['user-2'],
-            ['user-3']
-        ];
-    }
-
-    public function usersAndOneOfTheirTasks()
-    {
-        return [
-            ['user-1', 'task-1'],
-            ['user-2', 'task-2'],
-            ['user-admin', 'task-admin']
-        ];
     }
 
     /**

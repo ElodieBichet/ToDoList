@@ -4,11 +4,14 @@ namespace App\Tests\Entity;
 
 use App\Entity\Task;
 use App\Entity\User;
+use App\Tests\Utils\DataProviders;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class UserTest extends KernelTestCase
 {
+    use DataProviders;
+
     public function getUserEntity(): User
     {
         return (new User())
@@ -50,16 +53,6 @@ class UserTest extends KernelTestCase
     public function testInvalidFormatEmail($email)
     {
         $this->assertHasErrors($this->getUserEntity()->setEmail($email), 1);
-    }
-
-    public function invalidEmails()
-    {
-        return [
-            ['email'],
-            ['email@email'],
-            ['@email.fr'],
-            ['email email']
-        ];
     }
 
     public function testDefaultUserRole()
