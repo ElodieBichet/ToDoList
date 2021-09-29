@@ -1,0 +1,5 @@
+recommendations:
+    php.dump_composer_autoloader_classmap:
+        enabled: false
+    php.symfony.avoid_dot_env_parsing:
+        enabled: false
